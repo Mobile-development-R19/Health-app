@@ -1,80 +1,88 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Text, ActivityIndicator } from 'react-native';
-import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getAuth, signInWithCredential, GoogleAuthProvider, initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import * as Google from 'expo-auth-session';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from "./config/firebaseConfig.js"
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyDvjtqd_dxNuf_l2Z9EczhHcGcMd4YSQdk',
-  authDomain: 'signintest-8cacf.firebaseapp.com',
-  projectId: 'signintest-8cacf',
-  storageBucket: 'signintest-8cacf.appspot.com',
-  messagingSenderId: '576453663774',
-  appId: '576453663774-v9bmnfcqptgpprn3f3cj6pdirs3cmgui.apps.googleusercontent.com',
-};
-
-// Initialize Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: '576453663774-v9bmnfcqptgpprn3f3cj6pdirs3cmgui.apps.googleusercontent.com', // Your Google Web Client ID
+  const [user, setUser] = useState(null);
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: "1079895983608-u4qha7kfb2suc2jd3q2nniattjs46far.apps.googleusercontent.com",
+    redirectUri: "https://auth.expo.io/@samulimv/toimiiko",
+    useProxy: true, // Käyttää oikeaa URI:a Expon kanssa!!!!!!!!!
   });
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // State to track errors
-
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      const credential = GoogleAuthProvider.credential(id_token);
-
-      setLoading(true);
-
-      // Sign in to Firebase using the credential
-      signInWithCredential(auth, credential)
-        .then((userCredential) => {
+    const handleSignIn = async () => {
+      if (response?.type === 'success') {
+        try {
+          const { id_token } = response.params;
+          const credential = GoogleAuthProvider.credential(id_token);
+          const userCredential = await signInWithCredential(auth, credential);
           setUser(userCredential.user);
-          setLoading(false);
-          setError(null); // Clear any previous errors
-        })
-        .catch((error) => {
-          console.error(error.message);
-          setError(error.message); // Set error if sign-in fails
-          setLoading(false);
-        });
-    }
+        } catch (error) {
+          console.error('Firebase sign-in error', error);
+          Alert.alert('Authentication Error', 'There was an error signing in with Google. Please try again.');
+        }
+      } else if (response?.type === 'error') {
+        Alert.alert('Authentication Error', 'An error occurred during the authentication process. Please try again.');
+      }
+    };
+
+    handleSignIn();
   }, [response]);
 
-  // Log useful information for debugging
-  useEffect(() => {
-    console.log('Request:', request);
-    console.log('Response:', response);
-    console.log('User:', user);
-    console.log('Error:', error);
-  }, [request, response, user, error]);
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? (
-        <Text style={{ color: 'red' }}>Error: {error}</Text> // Display any errors
-      ) : user ? (
-        <Text>Welcome, {user.displayName}</Text>
+    <View style={styles.container}>
+      {!user ? (
+        <TouchableOpacity style={styles.button} onPress={() => promptAsync()}>
+          <Text style={styles.buttonText}>Sign in with Google</Text>
+        </TouchableOpacity>
       ) : (
-        <Button
-          title="Sign In with Google"
-          disabled={!request}
-          onPress={() => promptAsync()}
-        />
+        <View style={styles.userInfo}>
+          <Text style={styles.welcomeText}>Welcome, {user.displayName}!</Text>
+          <TouchableOpacity style={styles.button} onPress={() => setUser(null)}>
+            <Text style={styles.buttonText}>Sign out</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  userInfo: {
+    alignItems: 'center',
+  },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  button: {
+    borderWidth: 2,
+    borderColor: 'blue',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: 'white',
+  },
+  buttonText: {
+    color: 'blue',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+
+
