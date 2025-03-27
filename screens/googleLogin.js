@@ -3,21 +3,19 @@ import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from "../config/firebaseConfig"; // Ensure Firebase config is correct
+import { auth } from "../config/firebaseConfig"; 
 
-WebBrowser.maybeCompleteAuthSession();  // Ensure to complete the auth session
+WebBrowser.maybeCompleteAuthSession();  
 
 export default function GoogleLogin({ navigation }) {
   const [user, setUser] = useState(null);
 
-  // Use correct redirectUri and clientId
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: "97763493955-1c1ghhom38h5bteejv8j6dfplcllcl7l.apps.googleusercontent.com", // Use your actual client ID
-    redirectUri: "https://auth.expo.io/@samulimv/Health_app", // Use your actual redirect URI for Expo Go
-    useProxy: true,  // Ensure useProxy is true for Expo Go
+    clientId: "97763493955-1c1ghhom38h5bteejv8j6dfplcllcl7l.apps.googleusercontent.com", 
+    redirectUri: "https://auth.expo.io/@samulimv/Health_app", 
+    useProxy: true,  
   });
 
-  // Handling the sign-in process
   useEffect(() => {
     const handleSignIn = async () => {
       if (response?.type === 'success') {
@@ -26,19 +24,19 @@ export default function GoogleLogin({ navigation }) {
           const credential = GoogleAuthProvider.credential(id_token);
           const userCredential = await signInWithCredential(auth, credential);
           setUser(userCredential.user);
-          navigation.replace("HomeScreen"); // Navigate after successful login
+          navigation.replace("HomeScreen");
         } catch (error) {
           console.error('Firebase sign-in error', error);
           Alert.alert('Authentication Error', 'There was an error signing in with Google. Please try again.');
         }
       } else if (response?.type === 'error') {
-        console.error('Authentication error', response.error);  // Log the actual error
+        console.error('Authentication error', response.error); 
         Alert.alert('Authentication Error', 'An error occurred during the authentication process. Please try again.');
       }
     };
 
     handleSignIn();
-  }, [response]); // Re-run the effect when the response changes
+  }, [response]); 
 
   return (
     <View style={styles.container}>
@@ -50,9 +48,8 @@ export default function GoogleLogin({ navigation }) {
         <View style={styles.userInfo}>
           <Text style={styles.welcomeText}>Welcome, {user.displayName}!</Text>
           <TouchableOpacity style={styles.button} onPress={() => {
-            // Sign out logic
             setUser(null);
-            auth.signOut(); // Ensure Firebase sign out is done
+            auth.signOut(); 
           }}>
             <Text style={styles.buttonText}>Sign out</Text>
           </TouchableOpacity>
