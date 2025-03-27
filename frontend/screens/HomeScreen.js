@@ -56,8 +56,7 @@ const HomeScreen = ({ navigation }) => {
           Ruutuaika
         </Button>
       </View>
-      
-      <Footer /> 
+      <Footer navigation={navigation} /> 
     </View>
   );
 };

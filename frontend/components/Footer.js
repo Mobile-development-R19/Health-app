@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
-const Footer = () => {
+const Footer = ({ navigation }) => {
     console.log('Footer component rendered');
   return (
     <View style={styles.footer}>
