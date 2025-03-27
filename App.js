@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import GoogleLogin from './screens/googleLogin'; // Import login screen
-import HomeScreen from './screens/homeScreen'; // Import home screen
+import GoogleLogin from './screens/googleLogin';
+import HomeScreen from './screens/homeScreen'; 
 
 const Stack = createStackNavigator();
 

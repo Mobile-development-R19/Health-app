@@ -3,18 +3,17 @@ import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from "../config/firebaseConfig"; // Import your Firebase config
+import { auth } from "../config/firebaseConfig"; 
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleLogin({ navigation }) {
   const [user, setUser] = useState(null);
 
-  // Google auth session setup
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: "97763493955-1c1ghhom38h5bteejv8j6dfplcllcl7l.apps.googleusercontent.com", // Your Firebase web client ID
-    redirectUri: "https://auth.expo.io/@samulimv/Health_app",  // The redirect URI for Expo
-    useProxy: true,
+    clientId: "97763493955-1c1ghhom38h5bteejv8j6dfplcllcl7l.apps.googleusercontent.com",
+    redirectUri: "https://auth.expo.io/@samulimv/Health_app",
+    useProxy: false,
   });
 
   useEffect(() => {
@@ -23,11 +22,9 @@ export default function GoogleLogin({ navigation }) {
         try {
           const { id_token } = response.params;
           const credential = GoogleAuthProvider.credential(id_token);
-
-          // Firebase authentication with Google credential
           const userCredential = await signInWithCredential(auth, credential);
           setUser(userCredential.user);
-          navigation.replace("HomeScreen"); // Navigate to HomeScreen on successful login
+          navigation.replace("HomeScreen"); 
         } catch (error) {
           console.error('Firebase sign-in error', error);
           Alert.alert('Authentication Error', 'There was an error signing in with Google. Please try again.');
