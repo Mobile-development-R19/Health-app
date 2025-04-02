@@ -3,16 +3,40 @@ import React, { useState } from 'react'
 import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Header } from 'react-native/Libraries/NewAppScreen';
+import { auth, getFirestore, doc, setDoc  } from "../firebase/Config";
 
-export default function MyDetails() {
+export default function MyDetails({ navigation }) {
 
   const [height, setHeight] = useState(0)
   const [weight, setWeight] = useState(0)
   const [age, setAge] = useState(0)
   const [gender, setGender] = useState("")
 
-  const savePersonalInfo = () => {
-    // Function to save user info
+  const savePersonalInfo = async() => {
+    try{
+
+      const user = auth.currentUser
+      if (!user) {
+        alert('Käyttäjä ei ole kirjautunut sisään.')
+        return
+      }
+
+      const db = getFirestore()
+      await setDoc(doc(db, "users", user.uid), {
+        height: parseInt(height),
+        weight: parseInt(weight),
+        age: parseInt(age),
+        gender: gender
+      }, { merge: true }); // "merge: true" säilyttää vanhat tiedot, jos niitä on jo tallennettu
+      alert('Tiedot tallennettu.')
+      navigation.navigate('HomeScreen')
+
+    } catch (error) {
+      alert('Tietojen tallentaminen epäonnistui. ' + error.message)
+      console.log('VIRHE: ' + error.message)
+
+    }
+    
   }
 
   return (
@@ -26,6 +50,7 @@ export default function MyDetails() {
           onChangeText={setHeight}
           placeholder='Anna pituus'
           keyboardType="numeric"
+          returnKeyType='done'
           style={styles.input}
         />
       </View>
@@ -37,6 +62,7 @@ export default function MyDetails() {
           onChangeText={setWeight}
           placeholder='Anna paino'
           keyboardType="numeric"
+          returnKeyType='done'
           style={styles.input}
         />
       </View>
@@ -48,6 +74,7 @@ export default function MyDetails() {
           onChangeText={setAge}
           placeholder='Anna ikä'
           keyboardType="numeric"
+          returnKeyType='done'
           style={styles.input}
         />
       </View>
