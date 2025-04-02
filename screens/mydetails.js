@@ -12,6 +12,7 @@ export default function MyDetails({ navigation }) {
   const [age, setAge] = useState(0)
   const [gender, setGender] = useState("")
 
+
   const savePersonalInfo = async() => {
     try{
 
