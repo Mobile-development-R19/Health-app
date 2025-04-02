@@ -10,7 +10,7 @@ export default function Login({ navigation }) {
         try {
             await signInWithEmailAndPassword(auth, email, password)
             alert('Kirjautuminen onnistui!')
-            navigation.navigate('HomeScreen')
+            navigation.navigate('mydetails')
 
         } catch (error) {
             alert('Kirjautuminen epäonnistui. ' + error.message)
