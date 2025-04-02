@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Header } from 'react-native/Libraries/NewAppScreen';
 
-export default function MyDetails() {
+export default function MyDetails({ navigation }) {
 
   const [height, setHeight] = useState(0)
   const [weight, setWeight] = useState(0)
@@ -13,6 +13,7 @@ export default function MyDetails() {
 
   const savePersonalInfo = () => {
     // Function to save user info
+    navigation.navigate('HomeScreen')
   }
 
   return (
