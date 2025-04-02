@@ -15,8 +15,18 @@ export default function App() {
         <Stack.Screen name='Signup' component={Signup} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
-        <Stack.Screen name='MyDetails' component={MyDetails} />
+        <Stack.Screen name='mydetails' component={MyDetails} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
