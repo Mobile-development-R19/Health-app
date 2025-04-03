@@ -15,7 +15,7 @@ export default function ChartPreview({navigation, data, title}) {
         <Pressable
             style={styles.container}
             onPress={() => {
-                navigation.navigate("chart");
+                navigation.navigate("Chart");
             }}
         >
             <View style={styles.textContainer}>
@@ -53,6 +53,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         margin: 10,
         padding: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
     },
     textContainer: {
         flexDirection: "row",
@@ -65,7 +72,7 @@ const styles = StyleSheet.create({
     },
     textSmall: {
         fontSize: 16,
-        color: "gray",
+        color: "#aaa",
         marginLeft: 6,
     },
 });

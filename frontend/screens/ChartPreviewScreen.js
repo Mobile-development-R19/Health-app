@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { View } from "react-native";
-import ChartPreview from "../components/ChartPreview.js";
+import { StyleSheet, View } from "react-native";
+import ChartPreview from "../components/ChartPreview";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function ChartPreviewScreen({navigation}) {
     const [data, _] = useState([
@@ -8,12 +10,29 @@ export default function ChartPreviewScreen({navigation}) {
     ]);
 
     return (
-        <View>
-            <ChartPreview
-                navigation={navigation}
-                data={data}
-                title="Askeleet"
-            />
+        <View style={styles.container}>
+            <Header navigation={navigation} />
+            <View style={styles.chartContainer}>
+                <ChartPreview
+                    navigation={navigation}
+                    data={data}
+                    title="Askeleet"
+                />
+            </View>
+            <Footer navigation={navigation} />
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "space-between",
+        paddingBottom: 30,
+        backgroundColor: "#f9f9f9",
+    },
+    chartContainer: {
+        flex: 1,
+        justifyContent: "flex-start",
+    },
+});

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import TabBar from "../components/TabBar.js";
-import Chart from "../components/Chart.js";
+import TabBar from "../components/TabBar";
+import Chart from "../components/Chart";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const MIN = 10;
 const MAX = 1000;
 
-export default function ChartScreen() {
+export default function ChartScreen({navigation}) {
     const [data, setData] = useState([
         30, 40, 50, 20, 10, 30, 40, 50, 40, 10, 30, 20
     ]);
@@ -24,38 +26,41 @@ export default function ChartScreen() {
 
     return (
         <View style={styles.container}>
-            <TabBar
-                tabs={[
-                    {
-                        title: "Päivä",
-                        onPress: () => { generateData(24); }
-                    },
-                    {
-                        title: "Viikko",
-                        onPress: () => { generateData(7); }
-                    },
-                    {
-                        title: "Kuukausi",
-                        onPress: () => { generateData(30); }
-                    },
-                    {
-                        title: "Vuosi",
-                        onPress: () => { generateData(12); }
-                    },
-                ]}
-            />
-            <View style={styles.textContainer}>
-                <Text style={styles.text}>
-                    {data.reduce((a, b) => a + b, 0)}
-                </Text>
-                <Text style={styles.textSmall}>
-                    askelta
-                </Text>
+            <Header navigation={navigation} />
+            <View style={styles.chartContainer}>
+                <TabBar
+                    tabs={[
+                        {
+                            title: "Päivä",
+                            onPress: () => { generateData(24); }
+                        },
+                        {
+                            title: "Viikko",
+                            onPress: () => { generateData(7); }
+                        },
+                        {
+                            title: "Kuukausi",
+                            onPress: () => { generateData(30); }
+                        },
+                        {
+                            title: "Vuosi",
+                            onPress: () => { generateData(12); }
+                        },
+                    ]}
+                />
+                <View style={styles.textContainer}>
+                    <Text style={styles.text}>
+                        {data.reduce((a, b) => a + b, 0)}
+                    </Text>
+                    <Text style={styles.textSmall}>
+                        askelta
+                    </Text>
+                </View>
+                <View style={styles.chart}>
+                    <Chart data={data} />
+                </View>
             </View>
-
-            <View style={styles.chart}>
-                <Chart data={data} />
-            </View>
+            <Footer navigation={navigation} />
         </View>
     );
 }
@@ -63,7 +68,13 @@ export default function ChartScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 20,
+        justifyContent: "space-between",
+        paddingBottom: 30,
+        backgroundColor: "#f9f9f9",
+    },
+    chartContainer: {
+        flex: 1,
+        justifyContent: "flex-start",
     },
     textContainer: {
         flexDirection: "row",
@@ -74,12 +85,11 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 40,
-        fontWeight: "bold"
     },
     textSmall: {
-        fontSize: 26,
-        color: "gray",
-        marginLeft: 6,
+        fontSize: 22,
+        color: "#bbb",
+        marginLeft: 4,
     },
     chart: {
         marginTop: 20,

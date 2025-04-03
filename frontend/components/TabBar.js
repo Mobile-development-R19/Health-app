@@ -41,16 +41,15 @@ const styles = StyleSheet.create({
         height: 44,
         marginLeft: 10,
         marginRight: 10,
-        backgroundColor: "lightgray",
+        backgroundColor: "#ddd",
         borderRadius: 16,
-        padding: 4,
+        padding: 2,
     },
     button: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
         margin: 2,
-        flexBasis: false,
         borderRadius: 12
     },
     text: {

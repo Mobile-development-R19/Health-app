@@ -9,7 +9,7 @@ const Footer = ({ navigation }) => {
       <IconButton 
         icon="home" 
         size={30} 
-        onPress={() => console.log('Koti')} 
+        onPress={() => navigation.navigate("HomeScreen")} 
       />
       <IconButton 
         icon="plus-circle" 
@@ -20,7 +20,7 @@ const Footer = ({ navigation }) => {
       <IconButton 
         icon="chart-bar" 
         size={30} 
-        onPress={() => console.log('Graafit')} 
+        onPress={() => navigation.navigate("ChartPreview")}
       />
     </View>
   );
@@ -30,7 +30,10 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 8,
+    paddingVertical: 10,
+    backgroundColor: "#ddd",
+    borderRadius: 20,
+    marginHorizontal: 20,
   },
 });
 
