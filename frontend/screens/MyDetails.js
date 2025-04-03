@@ -50,6 +50,7 @@ export default function MyDetails({ navigation }) {
           value={height}
           onChangeText={setHeight}
           placeholder='Anna pituus'
+          placeholderTextColor="#666"
           keyboardType="numeric"
           returnKeyType='done'
           style={styles.input}
@@ -62,6 +63,7 @@ export default function MyDetails({ navigation }) {
           value={weight}
           onChangeText={setWeight}
           placeholder='Anna paino'
+          placeholderTextColor="#666"
           keyboardType="numeric"
           returnKeyType='done'
           style={styles.input}
@@ -74,6 +76,7 @@ export default function MyDetails({ navigation }) {
           value={age}
           onChangeText={setAge}
           placeholder='Anna ikä'
+          placeholderTextColor="#666"
           keyboardType="numeric"
           returnKeyType='done'
           style={styles.input}
@@ -86,6 +89,7 @@ export default function MyDetails({ navigation }) {
           selectedValue={gender}
           onValueChange={(itemValue) => setGender(itemValue)}
           style={styles.picker}
+          itemStyle={{ color: '#666' }}
         >
           <Picker.Item label="Valitse sukupuoli" value="" />
           <Picker.Item label="Mies" value="male" />
