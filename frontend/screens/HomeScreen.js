@@ -56,8 +56,7 @@ const HomeScreen = ({ navigation }) => {
           Ruutuaika
         </Button>
       </View>
-      
-      <Footer /> 
+      <Footer navigation={navigation} /> 
     </View>
   );
 };
@@ -66,8 +65,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    padding: 16,
     backgroundColor: '#f9f9f9',
+    paddingBottom: 30,
   },
   mainButtons: {
     flex: 1,
