@@ -30,6 +30,7 @@ export default function Signup({ navigation }) {
     <View style={styles.container}>
       <TextInput 
         placeholder="Sähköposti"
+        placeholderTextColor="#666"
         value={email} 
         onChangeText={setEmail}
         style={styles.input}
@@ -37,6 +38,7 @@ export default function Signup({ navigation }) {
 
       <TextInput 
         placeholder="Salasana"
+        placeholderTextColor="#666"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
