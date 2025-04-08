@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
-import { auth, createUserWithEmailAndPassword, getFirestore, doc, setDoc  } from "../firebase/Config";
+import { auth, createUserWithEmailAndPassword, db, doc, setDoc  } from "../firebase/Config";
 
 export default function Signup({ navigation }) {
+  // Tilamuuttujat rekisteröitymiselle
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -10,8 +11,6 @@ export default function Signup({ navigation }) {
         try {
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
         const user = userCredentials.user
-
-        const db = getFirestore()
 
         await setDoc(doc(db, 'users/' + user.uid), {
             email: user.email

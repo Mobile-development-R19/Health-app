@@ -22,7 +22,9 @@ export default function MyDetails({ navigation }) {
         return
       }
 
-      const db = getFirestore()
+      console.log(user)
+
+    
       await setDoc(doc(db, "users", user.uid), {
         height: parseInt(height),
         weight: parseInt(weight),

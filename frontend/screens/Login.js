@@ -1,19 +1,36 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
-import { auth, signInWithEmailAndPassword, } from "../firebase/Config";
+import { auth, signInWithEmailAndPassword, doc, getDoc, db } from "../firebase/Config";
 
 export default function Login({ navigation }) {
+    // Tilamuuttujat kirjautumiselle, joita käytetään textinputeissa
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const handleLogin = async() => {
+    // Kirjautumisfunktio, joka toteutetaan kun käyttäjä painaa "kirjaudu" -nappia
+    const handleLogin = async () => {
         try {
-            await signInWithEmailAndPassword(auth, email, password)
-            alert('Kirjautuminen onnistui!')
-            navigation.navigate('MyDetails')
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const keys = Object.keys(data);
+
+                if (keys.length > 1) {
+                    // Käyttäjä on täyttänyt jo tietonsa, joten hypätään omien tietojen yli etusivulle
+                    navigation.navigate('HomeScreen');
+                } else {
+                    // Vain email löytyy, joten siirrytään omiin tietoihin
+                    navigation.navigate('MyDetails');
+                }
+            } 
         } catch (error) {
-            alert('Kirjautuminen epäonnistui. ' + error.message)
+            alert('Kirjautuminen epäonnistui. ' + error.message);
+            console.log(error.message)
         }
     }
 
