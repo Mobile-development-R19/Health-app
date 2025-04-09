@@ -3,11 +3,15 @@ import { View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import StepCount from './StepCount';
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
+      <StepCount />
+
+
 
       <View style={styles.mainButtons}>
         <Button 
