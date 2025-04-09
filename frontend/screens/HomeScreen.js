@@ -5,74 +5,82 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const HomeScreen = ({ navigation, setIsDarkMode }) => {
+export default function HomeScreen({ navigation, setIsDarkMode }) {
   const { colors } = useTheme();
   return (
     <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
      { <Header navigation={navigation} setIsDarkMode={setIsDarkMode} /> }
-      
 
       <View style={styles.mainButtons}>
-        <Button 
-          mode="contained" 
-          buttonColor={colors.primary} 
+        <Button
+          mode="contained"
+          buttonColor={colors.primary}
           textColor={colors.onPrimary}
-          onPress={() => console.log('Askeleet')} 
-          style={styles.button} 
+          onPress={() => console.log('Askeleet')}
+          style={styles.button}
           icon="walk"
         >
           Askeleet
         </Button>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
 
           buttonColor={colors.primary}
-          textColor={colors.onPrimary}  
-          onPress={() => navigation.navigate('SleepEntry')} 
+          textColor={colors.onPrimary}
+          onPress={() => navigation.navigate('SleepEntry')}
 
-          style={styles.button} 
+          style={styles.button}
           icon="moon-waning-crescent"
         >
           Unen seuranta
         </Button>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
           buttonColor={colors.primary}
-          textColor={colors.onPrimary} 
-          onPress={() => console.log('Liikunta ja treeni')} 
-          style={styles.button} 
+          textColor={colors.onPrimary}
+          onPress={() => console.log('Liikunta ja treeni')}
+          style={styles.button}
           icon="calendar"
         >
           Liikunta ja treenit
         </Button>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
  Toinen-Aleksi
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
           onPress={() => {
-            navigation.navigate('Calculator'); 
+            navigation.navigate('Calculator');
           }}
 
-          style={styles.button} 
+          style={styles.button}
           icon="calculator"
         >
           Laskurit (BMI, kalorit jne.)
         </Button>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
-          onPress={() => console.log('Ruutuaika')} 
-          style={styles.button} 
+          onPress={() => console.log('Ruutuaika')}
+          style={styles.button}
           icon="cellphone"
         >
           Ruutuaika
         </Button>
+        <Button
+          mode="contained"
+          buttonColor="brown"
+          onPress={() => navigation.navigate("Food")}
+          style={styles.button}
+          icon="food"
+        >
+          Ruoka
+        </Button>
       </View>
-      
-      <Footer navigation={navigation} /> 
+
+      <Footer navigation={navigation} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -85,7 +93,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'transparent',
   },
-  
   mainButtons: {
     flex: 1,
     justifyContent: 'center',
@@ -98,5 +105,3 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
 });
-
-export default HomeScreen;
