@@ -10,53 +10,62 @@ const HomeScreen = ({ navigation }) => {
       <Header navigation={navigation} />
 
       <View style={styles.mainButtons}>
-        <Button 
-          mode="contained" 
-          buttonColor="green" 
-          onPress={() => console.log('Askeleet')} 
-          style={styles.button} 
+        <Button
+          mode="contained"
+          buttonColor="green"
+          onPress={() => console.log('Askeleet')}
+          style={styles.button}
           icon="walk"
         >
           Askeleet
         </Button>
-        <Button 
-          mode="contained" 
-          buttonColor="green" 
-          onPress={() => console.log('Uni')} 
-          style={styles.button} 
+        <Button
+          mode="contained"
+          buttonColor="green"
+          onPress={() => console.log('Uni')}
+          style={styles.button}
           icon="moon-waning-crescent"
         >
           Unen seuranta
         </Button>
-        <Button 
-          mode="contained" 
-          buttonColor="green" 
-          onPress={() => console.log('Liikunta ja treeni')} 
-          style={styles.button} 
+        <Button
+          mode="contained"
+          buttonColor="green"
+          onPress={() => console.log('Liikunta ja treeni')}
+          style={styles.button}
           icon="calendar"
         >
           Liikunta ja treenit
         </Button>
-        <Button 
-          mode="contained" 
-          buttonColor="green" 
-          onPress={() => console.log('Laskurit')} 
-          style={styles.button} 
+        <Button
+          mode="contained"
+          buttonColor="green"
+          onPress={() => console.log('Laskurit')}
+          style={styles.button}
           icon="calculator"
         >
           Laskurit (BMI, kalorit jne.)
         </Button>
-        <Button 
-          mode="contained" 
-          buttonColor="green" 
-          onPress={() => console.log('Ruutuaika')} 
-          style={styles.button} 
+        <Button
+          mode="contained"
+          buttonColor="green"
+          onPress={() => console.log('Ruutuaika')}
+          style={styles.button}
           icon="cellphone"
         >
           Ruutuaika
         </Button>
+        <Button
+          mode="contained"
+          buttonColor="brown"
+          onPress={() => navigation.navigate("Food")}
+          style={styles.button}
+          icon="food"
+        >
+          Ruoka
+        </Button>
       </View>
-      <Footer navigation={navigation} /> 
+      <Footer navigation={navigation} />
     </View>
   );
 };
