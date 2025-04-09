@@ -9,7 +9,7 @@ const Header = ({ navigation }) => {
       <IconButton 
         icon="cog" 
         size={30} 
-        onPress={() => console.log('Asetukset')} 
+        onPress={() => navigation.navigate('Settings')} // 🔹 Navigoi Settings-näyttöön
       />
       <IconButton 
         icon="account" 

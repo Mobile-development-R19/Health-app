@@ -7,19 +7,21 @@ import HomeScreen from './screens/HomeScreen';
 import MyDetails from './screens/MyDetails';
 import ChartPreviewScreen from './screens/ChartPreviewScreen';
 import ChartScreen from './screens/ChartScreen';
+import Settings from './screens/Settings';
 
 const Stack = createStackNavigator()
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Signup' screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Signup' component={Signup} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='HomeScreen' component={HomeScreen} />
         <Stack.Screen name='MyDetails' component={MyDetails} />
         <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
         <Stack.Screen name="Chart" component={ChartScreen} />
+        <Stack.Screen name="Settings" component={Settings} />
       </Stack.Navigator>
     </NavigationContainer>
   );

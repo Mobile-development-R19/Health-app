@@ -36,3 +36,8 @@ yarn-error.*
 *.tsbuildinfo
 
 *.env
+
+/dist
+/build
+*.log
+
