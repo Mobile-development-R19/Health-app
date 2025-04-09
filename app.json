@@ -19,20 +19,20 @@
       "supportsTablet": true
     },
     "android": {
-      "googleServicesFile": "./google-services.json"
-    },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.samulimv.Health_app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.samulimv.Health_app"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      }
     },
     "extra": {
       "eas": {
         "projectId": "de8fe215-c774-48d3-b461-47ab53090f82"
       }
     }
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
   }
+}

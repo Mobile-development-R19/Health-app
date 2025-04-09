@@ -41,4 +41,6 @@ yarn-error.*
 /build
 *.log
 
-google-services.json
+
+/android
+/ios

@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "97763493955",
+    "project_id": "sports-app-c21d2",
+    "storage_bucket": "sports-app-c21d2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97763493955:android:72087b1bcd29d5d1e16cf6",
+        "android_client_info": {
+          "package_name": "com.samulimv.Health_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "97763493955-dv5u2hcd61h6h2g8o0qs2ra5vspbcf34.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.samulimv.Health_app",
+            "certificate_hash": "9deaef987975ce5a67f040c23bb83f6862f21a69"
+          }
+        },
+        {
+          "client_id": "97763493955-k8liuti7jjhqkun5bjd6v137c2enphgp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.samulimv.Health_app",
+            "certificate_hash": "29790c42da6b3dcbdcebb4a43e80fb7f2dbfcb01"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGkvy6dTO2RDez86Ur6IpgKITduUQlp7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "97763493955-1c1ghhom38h5bteejv8j6dfplcllcl7l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
