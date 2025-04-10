@@ -4,25 +4,30 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function StepCount() {
     const [isPedoMeterAvailable, setIsPedoMeterAvailable] = useState('checking')
-    const [pastStepCount, setPastStepCount] = useState(0)
+    const [pastStepCount, setPastStepCount] = useState(0)   // Viimeisen 24 tunnin askelmäärä, joka haetaan puhelimesta
 
+        // Funktio, joka tarkastaa onko askelmittari saatavilla
     const subscribe = async () => {
         const isAvailable = await Pedometer.isAvailableAsync()
         setIsPedoMeterAvailable(String(isAvailable))
+        console.log(isPedoMeterAvailable)
 
+        // Jos askelmittari on saatavilla, hakee askelmäärän viimeisen 24 tunnin ajalta
         if (isAvailable) {
-            const end = new Date()
-            const start = new Date()
-            start.setDate(end.getDate() - 1)
+            const end = new Date() // Nykyhetki
+            const start = new Date() // Nykyhetkestä tietty määritelty aika taaksepäin
+            start.setDate(end.getDate() - 1)    // Määritetään start 24 tunnin päähän (-1 tarkoittaa sitä)
 
+            // Pedometerin getStepCountAsync(start, end) funktio hakee askeleet päiviltä parametrien perusteella
             const pastStepCountResult = await Pedometer.getStepCountAsync(start, end)
             console.log("Step result:", pastStepCountResult)
+
             if (pastStepCountResult) {
                 setPastStepCount(pastStepCountResult.steps)
             }
         }
     }
-
+    // Suoritetaan subscribe() -funktio kun komponentti renderöidään
     useEffect(() => {
         subscribe()
     }, [])
@@ -46,7 +51,7 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#fff',
-        padding: 24,
+        padding: 20,
         borderRadius: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
