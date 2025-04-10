@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Header } from 'react-native/Libraries/NewAppScreen';
-import { auth, getFirestore, doc, setDoc  } from "../firebase/Config";
+import { auth, db, doc, setDoc  } from "../firebase/Config";
 
 export default function MyDetails({ navigation }) {
 

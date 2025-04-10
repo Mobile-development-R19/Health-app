@@ -1,6 +1,7 @@
 import { Pedometer } from "expo-sensors";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { setDoc, db, doc, auth } from "../firebase/Config";
 
 export default function StepCount() {
     const [isPedoMeterAvailable, setIsPedoMeterAvailable] = useState('checking')
@@ -22,8 +23,23 @@ export default function StepCount() {
             const pastStepCountResult = await Pedometer.getStepCountAsync(start, end)
             console.log("Step result:", pastStepCountResult)
 
-            if (pastStepCountResult) {
-                setPastStepCount(pastStepCountResult.steps)
+            const user = auth.currentUser
+            const uid = user.uid
+            const todayId = new Date().toISOString().split("T")[0]
+
+            if (user && pastStepCountResult) {
+                const steps = pastStepCountResult.steps
+                setPastStepCount(steps)
+
+                try {
+                    await setDoc(doc(db, "users", uid, "steps", todayId), {
+                        steps: steps,
+                        timestamp: new Date()
+                    })
+                        console.log("Data saved to Firestore account: ", uid)
+                } catch (error) {
+                    console.error("Save failed: ", error)
+                }
             }
         }
     }
