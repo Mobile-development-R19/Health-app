@@ -67,7 +67,8 @@ export default function SleepEntry() {
 
       <Button title="Tallenna uni" onPress={saveSleepData} />
 
-      <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
+          {/* Lisää navigointinappi */}
+          <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
 
     </View>
   );
