@@ -24,7 +24,7 @@ export default function App() {
         <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
         <Stack.Screen name="Chart" component={ChartScreen} />
         <Stack.Screen name="SleepEntry" component={SleepEntry} />
-        <Stack.Screen name="" component={SleepEntry} />
+        <Stack.Screen name="SleepList" component={SleepList} />
       </Stack.Navigator>
     </NavigationContainer>
   );
