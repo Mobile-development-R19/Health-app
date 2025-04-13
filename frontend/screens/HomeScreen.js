@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
         <Button 
           mode="contained" 
           buttonColor="green" 
-          onPress={() => console.log('Uni')} 
+          onPress={() => navigation.navigate('SleepEntry')} 
           style={styles.button} 
           icon="moon-waning-crescent"
         >

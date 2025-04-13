@@ -7,6 +7,9 @@ import HomeScreen from './screens/HomeScreen';
 import MyDetails from './screens/MyDetails';
 import ChartPreviewScreen from './screens/ChartPreviewScreen';
 import ChartScreen from './screens/ChartScreen';
+import SleepEntry from './screens/SleepEntry';
+import SleepList from './screens/SleepList'
+
 
 const Stack = createStackNavigator()
 
@@ -20,6 +23,8 @@ export default function App() {
         <Stack.Screen name='MyDetails' component={MyDetails} />
         <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
         <Stack.Screen name="Chart" component={ChartScreen} />
+        <Stack.Screen name="SleepEntry" component={SleepEntry} />
+        <Stack.Screen name="" component={SleepEntry} />
       </Stack.Navigator>
     </NavigationContainer>
   );
