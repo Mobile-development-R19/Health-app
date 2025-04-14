@@ -1,48 +1,88 @@
-import { View, Text, TextInput, Button } from 'react-native'
-import React, { useState } from 'react'
-import { StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Header } from 'react-native/Libraries/NewAppScreen';
-import { auth, getFirestore, doc, setDoc  } from "../firebase/Config";
+import { auth } from "../firebase/Config";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore"; // Oikeat tuonnit
 
 export default function MyDetails({ navigation }) {
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
-  const [height, setHeight] = useState(0)
-  const [weight, setWeight] = useState(0)
-  const [age, setAge] = useState(0)
-  const [gender, setGender] = useState("")
+  // Haetaan tiedot käyttäjältä ja täytetään kentät
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
+      setUserName(user.displayName || "Nimi ei saatavilla");  // Käyttäjän nimi
+      setUserEmail(user.email || "Sähköposti ei saatavilla"); // Käyttäjän sähköposti
 
-  const savePersonalInfo = async() => {
-    try{
+      try {
+        const db = getFirestore();
+        const userDoc = await getDoc(doc(db, "users", user.uid));
 
-      const user = auth.currentUser
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setHeight(data.height?.toString() || "");
+          setWeight(data.weight?.toString() || "");
+          setAge(data.age?.toString() || "");
+          setGender(data.gender || "");
+        }
+      } catch (error) {
+        console.error("Virhe haettaessa tietoja:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const savePersonalInfo = async () => {
+    try {
+      const user = auth.currentUser;
       if (!user) {
-        alert('Käyttäjä ei ole kirjautunut sisään.')
-        return
+        alert('Käyttäjä ei ole kirjautunut sisään.');
+        return;
       }
 
-      const db = getFirestore()
+      const db = getFirestore();
       await setDoc(doc(db, "users", user.uid), {
         height: parseInt(height),
         weight: parseInt(weight),
         age: parseInt(age),
         gender: gender
-      }, { merge: true }); // "merge: true" säilyttää vanhat tiedot, jos niitä on jo tallennettu
-      alert('Tiedot tallennettu.')
-      navigation.navigate('HomeScreen')
+      }, { merge: true });
 
+      alert('Tiedot tallennettu.');
+      navigation.navigate('HomeScreen'); // Siirretään käyttäjä HomeScreeniin
     } catch (error) {
-      alert('Tietojen tallentaminen epäonnistui. ' + error.message)
-      console.log('VIRHE: ' + error.message)
-
+      alert('Tietojen tallentaminen epäonnistui. ' + error.message);
+      console.log('VIRHE: ' + error.message);
     }
-    
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#000" />
+        <Text>Ladataan...</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Omat tiedot</Text>
+
+      {/* Näytetään käyttäjän nimi ja sähköposti */}
+      <Text>Käyttäjän nimi: {userName}</Text>
+      <Text>Käyttäjän sähköposti: {userEmail}</Text>
 
       <Text>Pituus (cm)</Text>
       <View style={styles.inputContainer}>
@@ -89,7 +129,6 @@ export default function MyDetails({ navigation }) {
           selectedValue={gender}
           onValueChange={(itemValue) => setGender(itemValue)}
           style={styles.picker}
-          itemStyle={{ color: '#666' }}
         >
           <Picker.Item label="Valitse sukupuoli" value="" />
           <Picker.Item label="Mies" value="male" />
@@ -97,12 +136,9 @@ export default function MyDetails({ navigation }) {
         </Picker>
       </View>
 
-      <Button
-        title='Tallenna'
-        onPress={savePersonalInfo} 
-      />
+      <Button title='Tallenna' onPress={savePersonalInfo} />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Platform, Pressable } from 'react-native';
 import { getFirestore, collection, doc, addDoc, Timestamp } from 'firebase/firestore';
 import { auth } from '../firebase/Config';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function SleepEntry() {
-  const [sleepTime, setSleepTime] = useState('');
-  const [wakeTime, setWakeTime] = useState('');
+export default function SleepEntry({ navigation }) {
+  const [sleepDate, setSleepDate] = useState(new Date());
+  const [wakeDate, setWakeDate] = useState(new Date());
+  const [sleepTime, setSleepTime] = useState(new Date());
+  const [wakeTime, setWakeTime] = useState(new Date());
+  const [showSleepDatePicker, setShowSleepDatePicker] = useState(false);
+  const [showWakeDatePicker, setShowWakeDatePicker] = useState(false);
+  const [showSleepTimePicker, setShowSleepTimePicker] = useState(false);
+  const [showWakeTimePicker, setShowWakeTimePicker] = useState(false);
+
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0]; // esim. "2025-04-14"
+  };
+
+  const formatTime = (date) => {
+    return date.toTimeString().slice(0, 5); // esim. "22:30"
+  };
 
   const calculateDuration = (sleep, wake) => {
-    const sleepDate = new Date(`1970-01-01T${sleep}:00`);
-    const wakeDate = new Date(`1970-01-01T${wake}:00`);
+    const sleepDate = new Date(`1970-01-01T${formatTime(sleep)}:00`);
+    const wakeDate = new Date(`1970-01-01T${formatTime(wake)}:00`);
     if (wakeDate < sleepDate) {
       wakeDate.setDate(wakeDate.getDate() + 1); // yli keskiyön
     }
@@ -26,24 +41,54 @@ export default function SleepEntry() {
       }
 
       const duration = calculateDuration(sleepTime, wakeTime);
-
       const db = getFirestore();
-      const userDoc = doc(db, 'users', user.uid);
-      const sleepCollection = collection(userDoc, 'sleepData');
+      const sleepCollection = collection(doc(db, 'users', user.uid), 'sleepData');
 
       await addDoc(sleepCollection, {
-        sleepTime,
-        wakeTime,
+        sleepTime: formatTime(sleepTime),
+        wakeTime: formatTime(wakeTime),
         duration,
-        timestamp: Timestamp.now()
+        sleepDate: formatDate(sleepDate), // Tallennetaan päivämäärä nukkumaanmenolle
+        wakeDate: formatDate(wakeDate),   // Tallennetaan päivämäärä heräämiselle
+        timestamp: Timestamp.now() // Tallennetaan myös Firebasein timestamp
       });
 
       alert('Uni tallennettu onnistuneesti!');
-      setSleepTime('');
-      setWakeTime('');
     } catch (error) {
       console.error('Tallennusvirhe:', error.message);
       alert('Virhe unidatan tallennuksessa.');
+    }
+  };
+
+  const toggleDatePicker = (pickerType) => {
+    // Suljetaan kaikki valitsimet ja avataan vain haluttu
+    switch (pickerType) {
+      case 'sleepDate':
+        setShowSleepDatePicker(!showSleepDatePicker);
+        setShowWakeDatePicker(false);
+        setShowSleepTimePicker(false);
+        setShowWakeTimePicker(false);
+        break;
+      case 'wakeDate':
+        setShowWakeDatePicker(!showWakeDatePicker);
+        setShowSleepDatePicker(false);
+        setShowSleepTimePicker(false);
+        setShowWakeTimePicker(false);
+        break;
+      case 'sleepTime':
+        setShowSleepTimePicker(!showSleepTimePicker);
+        setShowSleepDatePicker(false);
+        setShowWakeDatePicker(false);
+        setShowWakeTimePicker(false);
+        break;
+      case 'wakeTime':
+        setShowWakeTimePicker(!showWakeTimePicker);
+        setShowSleepDatePicker(false);
+        setShowWakeDatePicker(false);
+        setShowSleepTimePicker(false);
+        break;
+      default:
+        break;
     }
   };
 
@@ -51,25 +96,80 @@ export default function SleepEntry() {
     <View style={styles.container}>
       <Text style={styles.title}>Lisää uni</Text>
 
-      <TextInput
-        placeholder="Nukkumaanmeno (esim. 22:30)"
-        value={sleepTime}
-        onChangeText={setSleepTime}
-        style={styles.input}
-      />
+      {/* Sleep Date Picker */}
+      <Pressable onPress={() => toggleDatePicker('sleepDate')} style={styles.timeField}>
+        <Text style={styles.timeText}>📅 Nukkumaanmeno: {formatDate(sleepDate)}</Text>
+      </Pressable>
+      {showSleepDatePicker && (
+        <DateTimePicker
+          value={sleepDate}
+          mode="date"
+          is24Hour={true}
+          display="spinner"
+          onChange={(event, selectedDate) => {
+            setShowSleepDatePicker(Platform.OS === 'ios');
+            if (selectedDate) setSleepDate(selectedDate);
+          }}
+        />
+      )}
 
-      <TextInput
-        placeholder="Herääminen (esim. 07:00)"
-        value={wakeTime}
-        onChangeText={setWakeTime}
-        style={styles.input}
-      />
+      {/* Sleep Time Picker */}
+      <Pressable onPress={() => toggleDatePicker('sleepTime')} style={styles.timeField}>
+        <Text style={styles.timeText}>🛏 Nukkumaanmeno: {formatTime(sleepTime)}</Text>
+      </Pressable>
+      {showSleepTimePicker && (
+        <DateTimePicker
+          value={sleepTime}
+          mode="time"
+          is24Hour={true}
+          display="spinner"
+          onChange={(event, selectedDate) => {
+            setShowSleepTimePicker(Platform.OS === 'ios');
+            if (selectedDate) setSleepTime(selectedDate);
+          }}
+        />
+      )}
 
+      {/* Wake Date Picker */}
+      <Pressable onPress={() => toggleDatePicker('wakeDate')} style={styles.timeField}>
+        <Text style={styles.timeText}>📅 Herääminen: {formatDate(wakeDate)}</Text>
+      </Pressable>
+      {showWakeDatePicker && (
+        <DateTimePicker
+          value={wakeDate}
+          mode="date"
+          is24Hour={true}
+          display="spinner"
+          onChange={(event, selectedDate) => {
+            setShowWakeDatePicker(Platform.OS === 'ios');
+            if (selectedDate) setWakeDate(selectedDate);
+          }}
+        />
+      )}
+
+      {/* Wake Time Picker */}
+      <Pressable onPress={() => toggleDatePicker('wakeTime')} style={styles.timeField}>
+        <Text style={styles.timeText}>⏰ Herääminen: {formatTime(wakeTime)}</Text>
+      </Pressable>
+      {showWakeTimePicker && (
+        <DateTimePicker
+          value={wakeTime}
+          mode="time"
+          is24Hour={true}
+          display="spinner"
+          onChange={(event, selectedDate) => {
+            setShowWakeTimePicker(Platform.OS === 'ios');
+            if (selectedDate) setWakeTime(selectedDate);
+          }}
+        />
+      )}
+
+      {/* Save Button */}
       <Button title="Tallenna uni" onPress={saveSleepData} />
+      <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
 
-          {/* Lisää navigointinappi */}
-          <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
-
+      {/* "Takaisin" painike */}
+      <Button title="Takaisin" onPress={() => navigation.goBack()} />
     </View>
   );
 }
@@ -78,17 +178,24 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#eef',
+    flex: 1,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 12,
+    marginBottom: 20,
+    color: '#333',
   },
-  input: {
+  timeField: {
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderColor: '#aaa',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+    marginBottom: 20,
+  },
+  timeText: {
+    fontSize: 18,
+    color: '#333',
   },
 });

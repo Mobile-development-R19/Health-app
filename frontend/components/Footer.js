@@ -20,7 +20,7 @@ const Footer = ({ navigation }) => {
       <IconButton 
         icon="chart-bar" 
         size={30} 
-        onPress={() => navigation.navigate("ChartPreview")}
+        onPress={() => navigation.navigate("SleepChart")}
       />
     </View>
   );
