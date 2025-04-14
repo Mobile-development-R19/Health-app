@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Keyboard, StyleSheet, FlatList, ScrollView, Text, TextInput,
-    TouchableOpacity, View } from "react-native";
+import { Keyboard, StyleSheet, ActivityIndicator, FlatList, ScrollView, Text,
+    TextInput, TouchableOpacity, View } from "react-native";
 import { auth, getFirestore, doc, getDoc, updateDoc  } from "../firebase/Config";
 import Constants from "expo-constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -19,23 +19,32 @@ export default function FoodScreen() {
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
     const [disabled, setDisabled] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [status, setStatus] = useState("");
 
     useEffect(() => {
+        getFoodsFromDb();
+    }, []);
+
+    async function getFoodsFromDb() {
+        setLoading(true);
+        setStatus("");
+
         const db = getFirestore();
         const user = auth.currentUser;
 
-        (async () => {
-            try {
-                const d = await getDoc(doc(db, "users", user.uid));
-                if (d.exists() && d.data().foods)
-                    setFoods(d.data().foods);
-            } catch (error) {
-                console.error(error);
-            }
-        })();
-    }, []);
+        try {
+            const d = await getDoc(doc(db, "users", user.uid));
+            if (d.exists() && d.data().foods)
+                setFoods(d.data().foods);
+        } catch (error) {
+            console.error(error);
+            setStatus("Ruokien lataaminen epäonnistui")
+        }
+        setLoading(false);
+    }
 
-    async function syncFoods(f) {
+    async function setFoodsToDb(f) {
         const db = getFirestore();
         const user = auth.currentUser;
 
@@ -56,9 +65,13 @@ export default function FoodScreen() {
 
     async function doSearch(q) {
         setResults([]);
-
-        if (q.length === 0)
+        setStatus("");
+        if (q.length === 0) {
+            if (selected.length === 0)
+                setShowFoods(true);
             return;
+        }
+        setLoading(true);
 
         try {
             const response = await fetch(`https://fineli.fi/fineli/api/v1/foods?q=${q}`, {
@@ -77,6 +90,11 @@ export default function FoodScreen() {
                     extra,
                 };
             }));
+            setLoading(false);
+
+            if (data.length === 0) {
+                setStatus("Ei tuloksia");
+            }
         } catch (error) {
             console.error(error);
         }
@@ -104,7 +122,7 @@ export default function FoodScreen() {
         setShowFoods(true);
         setSelected([]);
         setQuery("");
-        syncFoods(tmp);
+        setFoodsToDb(tmp);
     }
 
     return (
@@ -126,6 +144,8 @@ export default function FoodScreen() {
                         Keyboard.dismiss();
                         setQuery("");
                         setResults([]);
+                        if (selected.length === 0)
+                            setShowFoods(true);
                     }}
                 >
                     <Ionicons
@@ -153,7 +173,7 @@ export default function FoodScreen() {
                                         if (tmp[id].length === 0)
                                             delete tmp[id];
                                         setFoods(tmp);
-                                        syncFoods(tmp);
+                                        setFoodsToDb(tmp);
                                     }}
                                 />
                             )}
@@ -205,6 +225,8 @@ export default function FoodScreen() {
                                             }]}
                                             onPress={() => {
                                                 setSelected([]);
+                                                if (query.length === 0)
+                                                    setShowFoods(true);
                                             }}
                                         >
                                             <Text style={styles.text}>
@@ -253,6 +275,31 @@ export default function FoodScreen() {
                                 />
                             )}
                         />
+                    </View>
+                }
+                {loading &&
+                    <ActivityIndicator
+                        style={{
+                            marginTop: 20,
+                        }}
+                        size="large"
+                        color="#000"
+                    />
+                }
+                {status.length > 0 &&
+                    <View
+                        style={{
+                            marginTop: 20,
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 20
+                            }}
+                        >
+                            {status}
+                        </Text>
                     </View>
                 }
             </ScrollView>
