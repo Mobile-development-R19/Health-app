@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import TabBar from "../components/TabBar";
 import Chart from "../components/Chart";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { getDoc, db, doc, auth } from "../firebase/Config";
 
 const MIN = 10;
 const MAX = 1000;
+
 
 export default function ChartScreen({navigation}) {
     const [data, setData] = useState([
@@ -24,6 +26,38 @@ export default function ChartScreen({navigation}) {
         setData(tmp);
     }
 
+    const showStepData = async() =>  {
+        try {
+            const user = auth.currentUser
+            if (!user) {
+                console.log("User not signed in")
+                return
+            }
+
+            const uid = user.uid
+            const todayId = new Date().toISOString().split("T")[0]
+
+            const stepDocRef = doc(db, "users", uid, "steps", todayId)
+            const stepDocSnap = await getDoc(stepDocRef)
+
+            if (stepDocSnap.exists()) {
+                const data = stepDocSnap.data()
+                console.log("Steps today: ", data.steps)
+                
+                setData([data.steps])
+            }
+
+        } catch (error) {
+            console.error("Fetching steps failed: ", error)
+            setData([0])
+        }
+    }
+
+    useEffect(() => {
+      showStepData()
+    }, [])
+    
+
     return (
         <View style={styles.container}>
             <Header navigation={navigation} />
@@ -32,7 +66,7 @@ export default function ChartScreen({navigation}) {
                     tabs={[
                         {
                             title: "Päivä",
-                            onPress: () => { generateData(24); }
+                            onPress: () => { showStepData(); }
                         },
                         {
                             title: "Viikko",
