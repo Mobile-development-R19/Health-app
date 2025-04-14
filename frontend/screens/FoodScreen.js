@@ -17,6 +17,7 @@ export default function FoodScreen() {
     const [day, setDay] = useState(0);
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
+    const [disabled, setDisabled] = useState(true);
 
     function parseName(n) {
         const [name, ...extraSplit] = n.split(", ");
@@ -159,6 +160,9 @@ export default function FoodScreen() {
                                             setDay={setDay}
                                             setMonth={setMonth}
                                             setYear={setYear}
+                                            onChange={(e) => {
+                                                setDisabled(!e);
+                                            }}
                                         />
                                     </View>
                                     <View style={styles.buttonContainer}>
@@ -177,7 +181,7 @@ export default function FoodScreen() {
                                             </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[styles.button, {
+                                            style={[disabled ? {...styles.button, ...styles.disabled} : styles.button, {
                                                 backgroundColor: "#6d6",
                                                 borderColor: "#0a0",
                                                 marginLeft: 5,
@@ -185,6 +189,7 @@ export default function FoodScreen() {
                                             onPress={() => {
                                                 addSelected();
                                             }}
+                                            disabled={disabled}
                                         >
                                             <Text style={styles.text}>
                                                 Lisää valinta
@@ -271,6 +276,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 16,
         borderWidth: 3,
+    },
+    disabled: {
+        opacity: 0.25,
     },
     text: {
         fontSize: 16,
