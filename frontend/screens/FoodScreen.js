@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Keyboard, StyleSheet, FlatList, ScrollView, Text, TextInput,
     TouchableOpacity, View } from "react-native";
+import { auth, getFirestore, doc, getDoc, updateDoc  } from "../firebase/Config";
 import Constants from "expo-constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FoodResult from "../components/FoodResult";
@@ -18,6 +19,34 @@ export default function FoodScreen() {
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
     const [disabled, setDisabled] = useState(true);
+
+    useEffect(() => {
+        const db = getFirestore();
+        const user = auth.currentUser;
+
+        (async () => {
+            try {
+                const d = await getDoc(doc(db, "users", user.uid));
+                if (d.exists() && d.data().foods)
+                    setFoods(d.data().foods);
+            } catch (error) {
+                console.error(error);
+            }
+        })();
+    }, []);
+
+    async function syncFoods(f) {
+        const db = getFirestore();
+        const user = auth.currentUser;
+
+        try {
+            await updateDoc(doc(db, "users", user.uid), {
+                foods: f
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     function parseName(n) {
         const [name, ...extraSplit] = n.split(", ");
@@ -75,6 +104,7 @@ export default function FoodScreen() {
         setShowFoods(true);
         setSelected([]);
         setQuery("");
+        syncFoods(tmp);
     }
 
     return (
@@ -123,6 +153,7 @@ export default function FoodScreen() {
                                         if (tmp[id].length === 0)
                                             delete tmp[id];
                                         setFoods(tmp);
+                                        syncFoods(tmp);
                                     }}
                                 />
                             )}
