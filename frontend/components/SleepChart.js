@@ -54,8 +54,8 @@ export default function SleepChart({ navigation }) {
         }));
 
         setChartData({
-          labels,
-          datasets: [{ data: durations }]
+          labels: labels,
+          datasets: [{ data: durations }],
         });
 
         setSleepDetails(details);
@@ -71,6 +71,12 @@ export default function SleepChart({ navigation }) {
   if (!chartData) {
     return <Text style={{ textAlign: 'center', marginTop: 20 }}>Ladataan unidataa...</Text>;
   }
+
+  // Tasatunnit labelille
+  const getHourLabels = () => {
+    const hours = [1, 3, 5, 8, 10, 12];
+    return hours.map(hour => `${hour}h`);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -94,6 +100,8 @@ export default function SleepChart({ navigation }) {
           }}
           verticalLabelRotation={30}
           style={styles.chart}
+          // Aseta kustomoidut tunnit X-akselille
+          xLabels={getHourLabels()}
         />
       </ScrollView>
 
@@ -123,6 +131,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    padding: 10,
+    marginTop: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10

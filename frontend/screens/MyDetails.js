@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { auth } from "../firebase/Config";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore"; // Oikeat tuonnit
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
-export default function MyDetails({ navigation }) {
+export default function MyDetails({ navigation, route }) {
+  const fromLogin = route?.params?.fromLogin || false;
+
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [age, setAge] = useState("");
@@ -13,14 +15,13 @@ export default function MyDetails({ navigation }) {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
-  // Haetaan tiedot käyttäjältä ja täytetään kentät
   useEffect(() => {
     const fetchUserInfo = async () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      setUserName(user.displayName || "Nimi ei saatavilla");  // Käyttäjän nimi
-      setUserEmail(user.email || "Sähköposti ei saatavilla"); // Käyttäjän sähköposti
+      setUserName(user.displayName || "Nimi ei saatavilla");
+      setUserEmail(user.email || "Sähköposti ei saatavilla");
 
       try {
         const db = getFirestore();
@@ -28,10 +29,26 @@ export default function MyDetails({ navigation }) {
 
         if (userDoc.exists()) {
           const data = userDoc.data();
+
           setHeight(data.height?.toString() || "");
           setWeight(data.weight?.toString() || "");
           setAge(data.age?.toString() || "");
           setGender(data.gender || "");
+
+          // Skipataan näyttö vain kirjautumisen jälkeen
+          if (
+            fromLogin &&
+            data.height &&
+            data.weight &&
+            data.age &&
+            data.gender
+          ) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'HomeScreen' }],
+            });
+            return;
+          }
         }
       } catch (error) {
         console.error("Virhe haettaessa tietoja:", error.message);
@@ -42,7 +59,7 @@ export default function MyDetails({ navigation }) {
 
     fetchUserInfo();
   }, []);
-
+//Tallentaa painon, pituuden tms..
   const savePersonalInfo = async () => {
     try {
       const user = auth.currentUser;
@@ -60,7 +77,7 @@ export default function MyDetails({ navigation }) {
       }, { merge: true });
 
       alert('Tiedot tallennettu.');
-      navigation.navigate('HomeScreen'); // Siirretään käyttäjä HomeScreeniin
+      navigation.navigate('HomeScreen');
     } catch (error) {
       alert('Tietojen tallentaminen epäonnistui. ' + error.message);
       console.log('VIRHE: ' + error.message);
@@ -80,7 +97,6 @@ export default function MyDetails({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.header}>Omat tiedot</Text>
 
-      {/* Näytetään käyttäjän nimi ja sähköposti */}
       <Text>Käyttäjän nimi: {userName}</Text>
       <Text>Käyttäjän sähköposti: {userEmail}</Text>
 

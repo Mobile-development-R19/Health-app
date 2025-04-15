@@ -12,6 +12,7 @@ import SleepList from './screens/SleepList'
 import SleepChart from './components/SleepChart'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import Settings from './screens/Settings';
+import CalculatorScreen from './screens/CalculatorScreen';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +31,7 @@ export default function App() {
         <Stack.Screen name="SleepList" component={SleepList} />
         <Stack.Screen name="SleepChart" component={SleepChart} />
         <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Calculator" component={CalculatorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
