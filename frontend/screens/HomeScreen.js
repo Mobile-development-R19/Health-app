@@ -40,7 +40,10 @@ const HomeScreen = ({ navigation }) => {
         <Button 
           mode="contained" 
           buttonColor="green" 
-          onPress={() => console.log('Laskurit')} 
+          onPress={() => {
+            console.log('Laskurit');
+            navigation.navigate('Calculator'); 
+          }}
           style={styles.button} 
           icon="calculator"
         >

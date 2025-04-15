@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import MyDetails from './screens/MyDetails';
 import ChartPreviewScreen from './screens/ChartPreviewScreen';
 import ChartScreen from './screens/ChartScreen';
+import CalculatorScreen from './screens/CalculatorScreen';
 
 const Stack = createStackNavigator()
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name='MyDetails' component={MyDetails} />
         <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
         <Stack.Screen name="Chart" component={ChartScreen} />
+        <Stack.Screen name="Calculator" component={CalculatorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
