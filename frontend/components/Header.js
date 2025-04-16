@@ -4,17 +4,21 @@ import { IconButton } from 'react-native-paper';
 
 const Header = ({ navigation }) => {
     console.log('Header component rendered');
+
   return (
     <View style={styles.header}>
+      {/* Asetukset-painike */}
       <IconButton 
         icon="cog" 
         size={30} 
-        onPress={() => console.log('Asetukset')} 
+        onPress={() => navigation.navigate('Settings')}  // Navigointi Asetukset-näyttöön
       />
+      
+      {/* Omat tiedot -painike */}
       <IconButton 
         icon="account" 
         size={30} 
-        onPress={() => navigation.navigate('MyDetails')} 
+        onPress={() => navigation.navigate('MyDetails')}  // Navigointi MyDetails-näyttöön
       />
     </View>
   );
