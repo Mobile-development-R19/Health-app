@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { getFirestore, collection, doc, getDocs } from 'firebase/firestore'; 
-import { auth } from '../firebase/Config';
+import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native'; 
+import { getFirestore, collection, doc, getDocs } from 'firebase/firestore'; // Firebase Firestore -kirjaston tuonti
+import { auth } from '../firebase/Config'; // Firebase autentikointi
 
 export default function SleepList({ navigation }) {
-  const [sleepEntries, setSleepEntries] = useState([]);
+  const [sleepEntries, setSleepEntries] = useState([]); // Tila tallennettujen unidatan käsittelyyn
 
   useEffect(() => {
+    // Hakee unidatan Firestoresta
     const fetchSleepData = async () => {
       const user = auth.currentUser;
       if (!user) {
@@ -15,23 +16,23 @@ export default function SleepList({ navigation }) {
       }
 
       try {
-        const db = getFirestore();
-        const sleepRef = collection(doc(db, "users", user.uid), "sleepData");
-        const snapshot = await getDocs(sleepRef);
+        const db = getFirestore(); // Firebase-tietokannan haku
+        const sleepRef = collection(doc(db, "users", user.uid), "sleepData"); // Käyttäjän unidata
+        const snapshot = await getDocs(sleepRef); // Hakee dokumentit
         const entries = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        // Lajitellaan uusimmat ensin:
+        // Lajittelee uusin tieto ensimmäiseksi
         const sorted = entries.sort((a, b) => new Date(b.timestamp.seconds * 1000) - new Date(a.timestamp.seconds * 1000));
-        setSleepEntries(sorted);
+        setSleepEntries(sorted); // Päivittää unidatat listaksi
       } catch (err) {
         console.error("Virhe haettaessa unidataa:", err.message);
         alert("Tietojen haku epäonnistui.");
       }
     };
 
-    fetchSleepData();
+    fetchSleepData(); // Kutsuu datan hakemista
   }, []);
 
   const renderItem = ({ item }) => (
@@ -50,11 +51,11 @@ export default function SleepList({ navigation }) {
       <Text style={styles.header}>Tallennetut unet</Text>
       <FlatList
         data={sleepEntries}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        keyExtractor={(item) => item.id} // Avain arvona dokumentin id
+        renderItem={renderItem} // Renderöi unikirjaukset
       />
       
-      {/* "Takaisin" painike asetettu alareunaan */}
+      {/* "Takaisin" painike, joka vie takaisin */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.buttonText}>Takaisin</Text>
       </TouchableOpacity>

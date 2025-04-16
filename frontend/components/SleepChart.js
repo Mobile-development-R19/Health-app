@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Dimensions, Text, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { BarChart } from 'react-native-gifted-charts';
 import { getFirestore, collection, doc, getDocs } from 'firebase/firestore';
 import { auth } from '../firebase/Config';
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get('window').width - 40;
 
+// SleepChart-näkymä: näyttää unidatan pylväsdiagrammina ja yksityiskohtina
 export default function SleepChart({ navigation }) {
-  const [chartData, setChartData] = useState(null);
-  const [sleepDetails, setSleepDetails] = useState([]);
+  const [data, setData] = useState([]); 
+  const [details, setDetails] = useState([]); 
 
+  // Hakee ja käsittelee unidatan Firestoresta käyttäjäkohtaisesti
   useEffect(() => {
     const fetchSleepData = async () => {
       const user = auth.currentUser;
@@ -20,45 +22,37 @@ export default function SleepChart({ navigation }) {
         const sleepRef = collection(doc(db, "users", user.uid), "sleepData");
         const snapshot = await getDocs(sleepRef);
 
-        const data = snapshot.docs.map(doc => doc.data());
-
-        if (data.length === 0) {
-          alert("Ei löydetty unidataa.");
-          return;
-        }
-
-        // Järjestetään sleepDate:n mukaan (tai timestamp jos puuttuu)
-        const sorted = data.sort((a, b) => {
+        // Raakadata jaetaan, lajitellaan päivämäärän mukaan
+        const rawData = snapshot.docs.map(doc => doc.data());
+        const sorted = rawData.sort((a, b) => {
           const dateA = new Date(a.sleepDate || a.timestamp?.seconds * 1000);
           const dateB = new Date(b.sleepDate || b.timestamp?.seconds * 1000);
           return dateA - dateB;
         });
 
-        const labels = sorted.map(entry =>
-          new Date(entry.sleepDate || entry.timestamp?.seconds * 1000).toLocaleDateString('fi-FI', {
-            month: 'short',
-            day: 'numeric'
-          })
-        );
-
-        const durations = sorted.map(entry => {
+        // Muodostetaan kaaviolle sopiva data
+        const transformed = sorted.map(entry => {
           const duration = parseFloat(entry.duration);
-          return isNaN(duration) ? 0 : duration;
+          const dateLabel = new Date(entry.sleepDate || entry.timestamp?.seconds * 1000).toLocaleDateString('fi-FI', {
+            day: 'numeric', month: 'numeric'
+          });
+          return {
+            value: isNaN(duration) ? 0 : duration,
+            label: dateLabel,
+            frontColor: '#4CAF50',
+          };
         });
 
-        const details = sorted.map(entry => ({
+        // Muodostetaan lisätiedot yksityiskohtaiselle näkymälle
+        const extra = sorted.map(entry => ({
           date: entry.sleepDate || new Date(entry.timestamp?.seconds * 1000).toLocaleDateString('fi-FI'),
           sleepTime: entry.sleepTime,
           wakeTime: entry.wakeTime,
           duration: entry.duration
         }));
 
-        setChartData({
-          labels: labels,
-          datasets: [{ data: durations }],
-        });
-
-        setSleepDetails(details);
+        setData(transformed);
+        setDetails(extra);
       } catch (error) {
         console.error("Virhe haettaessa unidataa:", error.message);
         alert("Virhe tiedon haussa");
@@ -68,56 +62,60 @@ export default function SleepChart({ navigation }) {
     fetchSleepData();
   }, []);
 
-  if (!chartData) {
-    return <Text style={{ textAlign: 'center', marginTop: 20 }}>Ladataan unidataa...</Text>;
+  // Näytetään latausviesti jos dataa ei vielä ole
+  if (data.length === 0) {
+    return <Text style={styles.loading}>Ladataan unidataa...</Text>;
   }
 
-  // Tasatunnit labelille
-  const getHourLabels = () => {
-    const hours = [1, 3, 5, 8, 10, 12];
-    return hours.map(hour => `${hour}h`);
-  };
+  // Määritellään kaavion asetukset skaalautuvasti
+  const manyData = data.length > 7;
+  const fixedBarWidth = 20;
+  const fixedSpacing = 15;
+  const barWidth = manyData ? fixedBarWidth : screenWidth / (2 * data.length);
+  const spacing = manyData ? fixedSpacing : screenWidth / (2 * data.length);
+  const chartWidth = manyData ? data.length * (barWidth + spacing) : screenWidth;
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Unen kesto (tuntia)</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>🛌 Uniseuranta</Text>
 
-      {/* ScrollView ympäröimässä BarChart komponenttia */}
-      <ScrollView horizontal={true} style={styles.chartContainer}>
-        <BarChart
-          data={chartData}
-          width={screenWidth * 2}  // Aseta leveys suuremmaksi, jotta kaikki data mahtuu
-          height={240}
-          yAxisSuffix="h"
-          chartConfig={{
-            backgroundGradientFrom: '#f0fff0',
-            backgroundGradientTo: '#c8e6c9',
-            color: (opacity = 1) => `rgba(0, 100, 0, ${opacity})`,
-            labelColor: () => '#333',
-            style: {
-              borderRadius: 16
-            }
-          }}
-          verticalLabelRotation={30}
-          style={styles.chart}
-          // Aseta kustomoidut tunnit X-akselille
-          xLabels={getHourLabels()}
-        />
-      </ScrollView>
+      {/* Pylväsdiagrammi kaaviolla ja horisontaalisella skrollauksella */}
+      <View style={styles.chartCard}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={{ width: chartWidth }}>
+            <BarChart
+              data={data}
+              barBorderRadius={6}
+              barWidth={barWidth}
+              spacing={spacing}
+              maxValue={12}
+              height={160}
+              noOfSections={4}
+              yAxisTextStyle={{ color: '#555' }}
+              xAxisLabelTextStyle={{ color: '#555', fontSize: 10 }}
+              rulesColor="#ddd"
+              isAnimated
+              showGradient
+            />
+          </View>
+        </ScrollView>
+        <Text style={styles.chartNote}>Y-akseli: Tunnit</Text>
+      </View>
 
-      <Text style={styles.subtitle}>Yksityiskohdat:</Text>
-      {sleepDetails.map((item, index) => (
-        <View key={index} style={styles.entry}>
-          <Text style={styles.entryDate}>📅 {item.date}</Text>
-          <Text style={styles.entryText}>🛏 Nukkumaan: {item.sleepTime}</Text>
-          <Text style={styles.entryText}>⏰ Herätys: {item.wakeTime}</Text>
-          <Text style={styles.entryText}>🕒 Kesto: {item.duration} h</Text>
+      {/* Yksityiskohtainen näkymä uniraporteista */}
+      <Text style={styles.subtitle}>📋 Yksityiskohdat</Text>
+      {details.map((item, i) => (
+        <View key={i} style={styles.detailCard}>
+          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.text}>🕒 Kesto: {item.duration} h</Text>
+          <Text style={styles.text}>🛏 Nukkumaan: {item.sleepTime}</Text>
+          <Text style={styles.text}>⏰ Herätys: {item.wakeTime}</Text>
         </View>
       ))}
 
-      {/* Takaisin-nappi alareunassa */}
+      {/* Takaisin-nappi navigointia varten */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.buttonText}>Takaisin</Text>
+        <Text style={styles.backText}>← Takaisin</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -125,56 +123,65 @@ export default function SleepChart({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    backgroundColor: '#f9f9f9',
+    padding: 20,
+    backgroundColor: '#f4f4f4',
+  },
+  loading: {
+    marginTop: 40,
+    textAlign: 'center',
+    fontSize: 16,
   },
   title: {
-    fontSize: 20,
-    padding: 10,
-    marginTop: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '700',
+    marginTop: 25,
+    marginBottom: 10,
     textAlign: 'center',
-    marginBottom: 10
+  },
+  chartCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 10,
+    elevation: 3,
+    marginBottom: 20,
+  },
+  chartNote: {
+    textAlign: 'center',
+    marginTop: 8,
+    color: '#666',
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginVertical: 10,
-    textAlign: 'center',
-    color: '#333'
+    marginBottom: 10,
   },
-  chartContainer: {
-    marginVertical: 8,
-    borderRadius: 16,
-  },
-  chart: {
-    borderRadius: 16,
-  },
-  entry: {
-    backgroundColor: '#e0f7e0',
+  detailCard: {
+    backgroundColor: '#e8f5e9',
+    borderRadius: 12,
     padding: 12,
-    marginVertical: 6,
-    borderRadius: 10,
+    marginBottom: 10,
   },
-  entryDate: {
+  date: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 4
+    marginBottom: 4,
   },
-  entryText: {
+  text: {
     fontSize: 14,
     color: '#333',
   },
   backButton: {
-    position: 'center', 
-    bottom: 20,
-    padding: 15,
+    marginTop: 20,
     backgroundColor: '#4CAF50',
-    borderRadius: 8,
+    borderRadius: 10,
+    paddingVertical: 12,
     alignItems: 'center',
   },
-  buttonText: {
+  backText: {
     color: '#fff',
     fontSize: 16,
   },

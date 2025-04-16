@@ -14,24 +14,28 @@ export default function SleepEntry({ navigation }) {
   const [showSleepTimePicker, setShowSleepTimePicker] = useState(false);
   const [showWakeTimePicker, setShowWakeTimePicker] = useState(false);
 
+  // Muotoilee päivämäärän ISO-muotoon (esim. "2025-04-14")
   const formatDate = (date) => {
-    return date.toISOString().split('T')[0]; // esim. "2025-04-14"
+    return date.toISOString().split('T')[0];
   };
 
+  // Muotoilee kellonajan "hh:mm" muotoon
   const formatTime = (date) => {
-    return date.toTimeString().slice(0, 5); // esim. "22:30"
+    return date.toTimeString().slice(0, 5);
   };
 
+  // Laskee unen keston kahden ajan (nukkumaanmenon ja heräämisen) välillä
   const calculateDuration = (sleep, wake) => {
     const sleepDate = new Date(`1970-01-01T${formatTime(sleep)}:00`);
     const wakeDate = new Date(`1970-01-01T${formatTime(wake)}:00`);
     if (wakeDate < sleepDate) {
-      wakeDate.setDate(wakeDate.getDate() + 1); // yli keskiyön
+      wakeDate.setDate(wakeDate.getDate() + 1); // Yli keskiyön menevä aika
     }
     const diff = (wakeDate - sleepDate) / (1000 * 60 * 60);
-    return diff.toFixed(1);
+    return diff.toFixed(1); // Palauttaa kellonajan eron tunteina
   };
 
+  // Tallentaa unen tiedot Firebase-tietokantaan
   const saveSleepData = async () => {
     try {
       const user = auth.currentUser;
@@ -48,9 +52,9 @@ export default function SleepEntry({ navigation }) {
         sleepTime: formatTime(sleepTime),
         wakeTime: formatTime(wakeTime),
         duration,
-        sleepDate: formatDate(sleepDate), // Tallennetaan päivämäärä nukkumaanmenolle
-        wakeDate: formatDate(wakeDate),   // Tallennetaan päivämäärä heräämiselle
-        timestamp: Timestamp.now() // Tallennetaan myös Firebasein timestamp
+        sleepDate: formatDate(sleepDate),
+        wakeDate: formatDate(wakeDate),
+        timestamp: Timestamp.now()
       });
 
       alert('Uni tallennettu onnistuneesti!');
@@ -60,8 +64,8 @@ export default function SleepEntry({ navigation }) {
     }
   };
 
+  // Näyttää tai piilottaa päivämäärä- ja kellonaikavalitsimia
   const toggleDatePicker = (pickerType) => {
-    // Suljetaan kaikki valitsimet ja avataan vain haluttu
     switch (pickerType) {
       case 'sleepDate':
         setShowSleepDatePicker(!showSleepDatePicker);

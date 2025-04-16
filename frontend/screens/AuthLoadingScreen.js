@@ -5,9 +5,10 @@ import { auth } from '../firebase/Config';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AuthLoadingScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Hook navigointiin
 
   useEffect(() => {
+    // Kuuntelee käyttäjän kirjautumistilan muutoksia
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigation.reset({
@@ -22,8 +23,8 @@ export default function AuthLoadingScreen() {
       }
     });
 
-    return unsubscribe; // Siivoaa kuuntelijan kun komponentti unmountataan
-  }, []);
+    return unsubscribe; // Siivoaa kuuntelijan komponentin poistuessa
+  }, []); // Efekti ajetaan vain kerran komponentin alussa
 
   return (
     <View style={styles.container}>

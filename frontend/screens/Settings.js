@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
-import { auth } from '../firebase/Config'; // Firebase konfiguraatio
+import { auth } from '../firebase/Config'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,7 +9,7 @@ export default function Settings() {
 
   const handleLogout = async () => {
     try {
-      // Poistetaan käyttäjän tiedot AsyncStorageista
+      // Poistetaan käyttäjän tiedot 
       await AsyncStorage.removeItem('userToken');
       
       // Kirjaudutaan ulos Firebase Authista
