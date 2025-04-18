@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import TabBar from "../components/TabBar";
 import Chart from "../components/Chart";
 import Header from "../components/Header";
@@ -11,9 +11,11 @@ const MAX = 1000;
 
 
 export default function ChartScreen({navigation}) {
-    const [data, setData] = useState([
-        30, 40, 50, 20, 10, 30, 40, 50, 40, 10, 30, 20
-    ]);
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false)
+
+    /*
+    Generoitu data testivaiheeseen
 
     function random(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -25,34 +27,52 @@ export default function ChartScreen({navigation}) {
             tmp.push(random(MIN, MAX));
         setData(tmp);
     }
+        */
 
-    const showStepData = async() =>  {
+    const showStepData = async (count = 1) => {
         try {
-            const user = auth.currentUser
+            setLoading(true)
+            const user = auth.currentUser;
             if (!user) {
-                console.log("User not signed in")
-                return
+                console.log("User not signed in");
+                setLoading(false)
+                return;
             }
-
-            const uid = user.uid
-            const todayId = new Date().toISOString().split("T")[0]
-
-            const stepDocRef = doc(db, "users", uid, "steps", todayId)
-            const stepDocSnap = await getDoc(stepDocRef)
-
-            if (stepDocSnap.exists()) {
-                const data = stepDocSnap.data()
-                console.log("Steps today: ", data.steps)
-                
-                setData([data.steps])
+    
+            const uid = user.uid;
+            const today = new Date();
+    
+            const promises = [];
+    
+            for (let i = 0; i < count; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateId = date.toISOString().split("T")[0];
+                const ref = doc(db, "users", uid, "steps", dateId);
+                promises.push(getDoc(ref));
             }
-
+    
+            const snapshots = await Promise.all(promises);
+            const stepsArray = snapshots.map((snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    return d.steps ?? 0;
+                } else {
+                    return 0;
+                }
+            });
+    
+            // Päiväkohtainen data käännetään oikein päin (vanhin ensin)
+            setData(stepsArray.reverse());
+            setLoading(false)
+    
         } catch (error) {
-            console.error("Fetching steps failed: ", error)
-            setData([0])
+            console.error("Fetching steps failed: ", error);
+            setData([0]);
         }
-    }
+    };
 
+    // Suoritetaan kun komponentti renderöityy
     useEffect(() => {
       showStepData()
     }, [])
@@ -66,19 +86,15 @@ export default function ChartScreen({navigation}) {
                     tabs={[
                         {
                             title: "Päivä",
-                            onPress: () => { showStepData(); }
+                            onPress: () => { showStepData(1); }
                         },
                         {
                             title: "Viikko",
-                            onPress: () => { generateData(7); }
+                            onPress: () => { showStepData(7); }
                         },
                         {
                             title: "Kuukausi",
-                            onPress: () => { generateData(30); }
-                        },
-                        {
-                            title: "Vuosi",
-                            onPress: () => { generateData(12); }
+                            onPress: () => { showStepData(30); }
                         },
                     ]}
                 />
@@ -90,9 +106,14 @@ export default function ChartScreen({navigation}) {
                         askelta
                     </Text>
                 </View>
-                <View style={styles.chart}>
-                    <Chart data={data} />
-                </View>
+                 {/* Latausindikaattori */}
+                 {loading ? (
+                    <ActivityIndicator size="large" color="lightgray" style={styles.loader} />
+                ) : (
+                    <View style={styles.chart}>
+                        <Chart data={data} />
+                    </View>
+                )}
             </View>
             <Footer navigation={navigation} />
         </View>
