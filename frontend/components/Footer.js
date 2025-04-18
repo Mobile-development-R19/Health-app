@@ -36,7 +36,7 @@ const Footer = ({ navigation }) => {
         size={28} 
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => navigation.navigate('Chart'} 
+        onPress={() => navigation.navigate('ChartScreen'} 
       />
       </View>
 
