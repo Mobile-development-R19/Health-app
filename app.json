@@ -16,19 +16,34 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": [
-        "ACTIVITY_RECOGNITION",
-        "BODY_SENSORS"
-      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.vsuho1.Health_app"
+      "package": "com.vsuho1.Health_app",
+      "permissions": [
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.WRITE_STEPS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "expo-health-connect",
+      "./plugins/androidManifestPlugin.js",
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "compileSdkVersion": 34,
+          "targetSdkVersion": 34,
+          "buildToolsVersion": "34.0.0",
+          "minSdkVersion": 26
+        }
+      }
+    ]
+  ],
     "extra": {
       "eas": {
         "projectId": "76b43163-a1f2-4e00-8f80-07da891bb84e"

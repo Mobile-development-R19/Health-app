@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 const Header = ({ navigation }) => {
-    console.log('Header component rendered');
+   // console.log('Header component rendered');
   return (
     <View style={styles.header}>
       <IconButton 

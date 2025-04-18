@@ -1,145 +1,160 @@
+import { useEffect, useState, } from "react";
+import { StyleSheet, Text, View, Platform } from "react-native";
+import { initialize, requestPermission, readRecords } from "react-native-health-connect"; 
 import { Pedometer } from "expo-sensors";
-import { useEffect, useState, PermissionsAndroid, Platform } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { setDoc, db, doc, auth } from "../firebase/Config";
 
 export default function StepCount() {
-    const [isPedoMeterAvailable, setIsPedoMeterAvailable] = useState('checking')
-    const [pastStepCount, setPastStepCount] = useState(0)   // Viimeisen 24 tunnin askelmäärä, joka haetaan puhelimesta
+  const [isAvailable, setIsAvailable] = useState("checking")  // Tilamuuttuja debuggaukseen, onko data saatavilla
+  const [stepCount, setStepCount] = useState(0)
 
-    const requestAndroidPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
-                {
-                    title: "Askelmittari",
-                    message: "Sovellus tarvitsee luvan askelmäärän laskemiseen.",
-                    buttonNeutral: "Kysy myöhemmin",
-                    buttomNegative: "Peruuta",
-                    buttonPositive: "OK"
-                }
-            )
-            return granted === PermissionsAndroid.RESULTS.GRANTED
-        } catch (error) {
-            console.log("requestAndroidPermission errori: ", error)
-            return false
-        }
+  const todayId = new Date().toISOString().split("T")[0] // esim. "2025-04-18"
+
+  // Funktio, joka lukee askeldatan Androidilta
+  const readAndroidData = async () => {
+    try {
+      const isInitialized = await initialize()  // Alustetaan Health Connect
+      if (!isInitialized) {
+        setIsAvailable("Initialization failed")
+        return
+      }
+
+      // Pyydetään käyttäjältä lupa Health Connectissa lukea askelia
+      const permissions = [
+        { accessType: 'read', recordType: 'Steps' },
+      ];
+
+      // Jos lupaa ei myönnetä, ei tehdä mitään
+      const permissionResult = await requestPermission(permissions)
+      if (!permissionResult) {
+        setIsAvailable("Permission not granted")
+        console.log(isAvailable)
+        return
+      }
+
+      // Lupa myönnetty, haetaan askeleet tämän päivän ajalta (00.00-23.59)
+      const now = new Date()
+      const startTime = new Date(now)
+      startTime.setHours(0, 0, 0, 0)
+
+      const endTime = new Date(now)
+      endTime.setHours(23, 59, 59, 999)
+
+      const stepsData = await readRecords('Steps', {
+        timeRangeFilter: {
+          operator: 'between',
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+        },
+      });
+
+      // Kaikki päivän askeleet summattuna
+      const steps = stepsData.records.reduce((sum, cur) => sum + cur.count, 0)
+      setStepCount(steps);
+
+      // Varmistetaan, että käyttäjä on kirjautunut sisään ja tallennetaan nykyinen askelmäärä Firestoreen
+      const user = auth.currentUser
+      if (user) {
+        await setDoc(doc(db, "users", user.uid, "steps", todayId), {
+          steps: steps,
+          timestamp: new Date(),
+        })
+      }
+      setIsAvailable("Data fetched successfully")
+    } catch (error) {
+      console.error("Error fetching health data:", error)
+      setIsAvailable("Error fetching data")
+    }
+  };
+
+
+  // Funktio, joka lukee askeldatan iOS:lta
+  const readIosData = async () => {
+    // Pyydetään käyttäjältä lupa lukea askeltietoja
+    const { status } = await Pedometer.requestPermissionsAsync()
+    if (status !== "granted") {
+      setIsAvailable("Permission denied")
+      return
     }
 
-        // Funktio, joka tarkastaa onko askelmittari saatavilla
-    const subscribe = async () => {
-        console.log("Subscribing to pedometer...")
+    // Tarkistetaan, onko laitteessa Pedometer-toimintoa 
+    const isPedometerAvailable = await Pedometer.isAvailableAsync()
+    setIsAvailable(String(isPedometerAvailable))
 
-        
-        if (Platform.OS === "android") {
-            const hasPermission = await requestAndroidPermission()
-            if (!hasPermission) {
-                setIsPedoMeterAvailable("Permission denied")
-                return
-            }
-        }
-       
-/*
-       if (Platform.OS === "android") {
-            const hasPermission = await requestAndroidPermission()
-            if (!hasPermission) {
-                setIsPedoMeterAvailable("Permission denied")
-                return
-            }
-        } 
+    // Jos askelmittari on saatavilla, haetaan päivän (00.00-23.59) askeleet
+    if (isPedometerAvailable) {
+      const start = new Date()
+      start.setHours(0, 0, 0, 0)
 
-        if (Platform.OS === "ios") {
-            const { status } = await Pedometer.requestPermissionsAsync()
-            if (status !== 'granted') {
-                console.warn("Permission to access pedometer was denied")
-                setIsPedoMeterAvailable("Permission denied")
-                return
-            }
-        }
+      const end = new Date();
+      end.setHours(23, 59, 59, 999)
+      
 
-        */
-            
-        const isAvailable = await Pedometer.isAvailableAsync()
-        setIsPedoMeterAvailable(String(isAvailable))
-        console.log(isPedoMeterAvailable)
+      const result = await Pedometer.getStepCountAsync(start, end)
+      const steps = result.steps || 0
+      setStepCount(steps)
 
-        // Jos askelmittari on saatavilla, hakee askelmäärän viimeisen 24 tunnin ajalta
-        if (isAvailable) {
-            const end = new Date() // Nykyhetki
-            const start = new Date() // Nykyhetkestä tietty määritelty aika taaksepäin
-            start.setDate(end.getDate() - 1)    // Määritetään start 24 tunnin päähän (-1 tarkoittaa sitä)
-
-            // Pedometerin getStepCountAsync(start, end) funktio hakee askeleet päiviltä parametrien perusteella
-            const pastStepCountResult = await Pedometer.getStepCountAsync(start, end)
-            console.log("Step result:", pastStepCountResult)
-            
-            const user = auth.currentUser //        
-            const uid = user.uid // Käyttäjän uniikki ID
-            const todayId = new Date().toISOString().split("T")[0]
-
-            if (user && pastStepCountResult) {
-                const steps = pastStepCountResult.steps
-                setPastStepCount(steps)
-
-                try {
-                    await setDoc(doc(db, "users", uid, "steps", todayId), {
-                        steps: steps,
-                        timestamp: new Date()
-                    })
-                        console.log("Data saved to Firestore account: ", uid)
-                } catch (error) {
-                    console.error("Save failed: ", error)
-                }
-            }
-        }
+      // Jos käyttäjä on kirjautunut sisään, tallennetaan askelmäärä Firestoreen
+      const user = auth.currentUser
+      if (user) {
+        await setDoc(doc(db, "users", user.uid, "steps", todayId), {
+          steps: steps,
+          timestamp: new Date(),
+        })
+      }
     }
+  }
 
-    
-    // Suoritetaan subscribe() -funktio kun komponentti renderöidään
-    useEffect(() => {
-        subscribe()
-    }, [])
+  // Suoritetaan komponentin renderöityessä
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      readAndroidData()
+      //console.log(isAvailable)
+    } else if (Platform.OS === 'ios') {
+      readIosData()
+      //console.log(isAvailable)
+  }
+  }, [])
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.card}>
-            <Text>{isPedoMeterAvailable}</Text>
-                <Text style={styles.title}>Askeleesi tänään</Text>
-                <Text style={styles.stepCount}>{pastStepCount}</Text>
-            </View>
-        </View>
-    )
+  return (
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Askeleesi tänään</Text>
+        <Text style={styles.stepCount}>{stepCount}</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-    },
-    card: {
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 6, 
-        alignItems: 'center',
-        width: '100%',
-        maxWidth: 350,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 12,
-    },
-    stepCount: {
-        fontSize: 48,
-        fontWeight: '700',
-        color: 'green', 
-    },
-})
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 6,
+    alignItems: "center",
+    width: "100%",
+    maxWidth: 350,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 12,
+  },
+  stepCount: {
+    fontSize: 48,
+    fontWeight: "700",
+    color: "green",
+  },
+});
