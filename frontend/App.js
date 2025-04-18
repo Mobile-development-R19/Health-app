@@ -99,6 +99,9 @@ export default function App() {
             {/* Pass our transparent theme to NavigationContainer */}
             <NavigationContainer theme={navTheme}>
               <Stack.Navigator initialRouteName="AuthLoadingScreen" screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="AuthLoadingScreen">
+                    {(props) => <AuthLoadingScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  </Stack.Screen>
                 <Stack.Screen name="Signup">
                   {(props) => <Signup {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
@@ -114,11 +117,11 @@ export default function App() {
                 <Stack.Screen name="Add">
                   {(props) => <Add {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
-                <Stack.Screen name="ChartPreview">
-                  {(props) => <Chart {...props} setIsDarkMode={setIsDarkMode} />}
+                <Stack.Screen name="ChartPreviewScreen">
+                  {(props) => <ChartPreviewScreen {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
-                <Stack.Screen name="Chart">
-                  {(props) => <Chart {...props} setIsDarkMode={setIsDarkMode} />}
+                <Stack.Screen name="ChartScreen">
+                  {(props) => <ChartScreen {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
                 <Stack.Screen name="SleepEntry">
                   {(props) => <SleepEntry {...props} setIsDarkMode={setIsDarkMode} />}
@@ -129,32 +132,15 @@ export default function App() {
                 <Stack.Screen name="SleepChart">
                   {(props) => <SleepChart {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
+                <Stack.Screen name="CalculatorScreen">
+                  {(props) => <CalculatorScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
           </SafeAreaView>
         </ImageBackground>
       </PaperProvider>
     </SafeAreaProvider>
-
-                  {/*
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='AuthLoadingScreen' screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="AuthLoadingScreen" component={AuthLoadingScreen} />
-        <Stack.Screen name='Signup' component={Signup} />
-        <Stack.Screen name='Login' component={Login} />
-        <Stack.Screen name='HomeScreen' component={HomeScreen} />
-        <Stack.Screen name='MyDetails' component={MyDetails} />
-        <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
-        <Stack.Screen name="Chart" component={ChartScreen} />
-        <Stack.Screen name="SleepEntry" component={SleepEntry} />
-        <Stack.Screen name="SleepList" component={SleepList} />
-        <Stack.Screen name="SleepChart" component={SleepChart} />
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="Calculator" component={CalculatorScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-    */}
-
   );
 }
 
