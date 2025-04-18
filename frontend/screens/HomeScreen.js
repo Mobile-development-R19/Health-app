@@ -26,9 +26,11 @@ const HomeScreen = ({ navigation, setIsDarkMode }) => {
         </Button>
         <Button 
           mode="contained" 
+
           buttonColor={colors.primary}
-          textColor={colors.onPrimary} 
-          onPress={() => console.log('Uni')} 
+          textColor={colors.onPrimary}  
+          onPress={() => navigation.navigate('SleepEntry')} 
+
           style={styles.button} 
           icon="moon-waning-crescent"
         >
@@ -46,9 +48,13 @@ const HomeScreen = ({ navigation, setIsDarkMode }) => {
         </Button>
         <Button 
           mode="contained" 
+ Toinen-Aleksi
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
-          onPress={() => console.log('Laskurit')} 
+          onPress={() => {
+            navigation.navigate('Calculator'); 
+          }}
+
           style={styles.button} 
           icon="calculator"
         >
@@ -79,9 +85,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'transparent',
   },
-  headerContainer: {
-    flex: 0,
-  },
+  
   mainButtons: {
     flex: 1,
     justifyContent: 'center',

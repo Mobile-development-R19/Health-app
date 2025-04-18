@@ -8,6 +8,14 @@ import Signup from './screens/Signup';
 import Login from './screens/Login';
 import HomeScreen from './screens/HomeScreen';
 import MyDetails from './screens/MyDetails';
+import ChartPreviewScreen from './screens/ChartPreviewScreen';
+import ChartScreen from './screens/ChartScreen';
+import SleepEntry from './screens/SleepEntry';
+import SleepList from './screens/SleepList'
+import SleepChart from './components/SleepChart'
+import AuthLoadingScreen from './screens/AuthLoadingScreen'
+import Settings from './screens/Settings';
+import CalculatorScreen from './screens/CalculatorScreen';
 import Add from './screens/Add';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { lightTheme, darkTheme } from './theme/Themes'; 
@@ -79,6 +87,7 @@ export default function App() {
   };
 
   return (
+
     <SafeAreaProvider>
       <PaperProvider theme={currentTheme}>
         <ImageBackground
@@ -89,7 +98,7 @@ export default function App() {
           <SafeAreaView style={styles.container}>
             {/* Pass our transparent theme to NavigationContainer */}
             <NavigationContainer theme={navTheme}>
-              <Stack.Navigator initialRouteName="Signup" screenOptions={{ headerShown: false }}>
+              <Stack.Navigator initialRouteName="AuthLoadingScreen" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Signup">
                   {(props) => <Signup {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
@@ -105,12 +114,47 @@ export default function App() {
                 <Stack.Screen name="Add">
                   {(props) => <Add {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
+                <Stack.Screen name="ChartPreview">
+                  {(props) => <Chart {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
+                <Stack.Screen name="Chart">
+                  {(props) => <Chart {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
+                <Stack.Screen name="SleepEntry">
+                  {(props) => <SleepEntry {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
+                <Stack.Screen name="SleepList">
+                  {(props) => <SleepList {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
+                <Stack.Screen name="SleepChart">
+                  {(props) => <SleepChart {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
           </SafeAreaView>
         </ImageBackground>
       </PaperProvider>
     </SafeAreaProvider>
+
+                  {/*
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='AuthLoadingScreen' screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="AuthLoadingScreen" component={AuthLoadingScreen} />
+        <Stack.Screen name='Signup' component={Signup} />
+        <Stack.Screen name='Login' component={Login} />
+        <Stack.Screen name='HomeScreen' component={HomeScreen} />
+        <Stack.Screen name='MyDetails' component={MyDetails} />
+        <Stack.Screen name="ChartPreview" component={ChartPreviewScreen} />
+        <Stack.Screen name="Chart" component={ChartScreen} />
+        <Stack.Screen name="SleepEntry" component={SleepEntry} />
+        <Stack.Screen name="SleepList" component={SleepList} />
+        <Stack.Screen name="SleepChart" component={SleepChart} />
+        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Calculator" component={CalculatorScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    */}
+
   );
 }
 

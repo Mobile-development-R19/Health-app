@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
               onChangeText={setEmail}
               style={styles.input}
             />
-      
+
             <TextInput 
               placeholder="Salasana"
               placeholderTextColor="#666"
@@ -36,11 +36,10 @@ export default function Login({ navigation }) {
               secureTextEntry
               style={styles.input}
             />
-      
+
             <Button title='Kirjaudu sisään' onPress={handleLogin} />
             <Text onPress={() => navigation.navigate('Signup')} style={styles.link}>Ei vielä tiliä? Rekisteröidy</Text>
           </View>
-    
   )
 }
 
