@@ -38,6 +38,7 @@ const Header = ({ navigation, setIsDarkMode }) => {
 
   return (
     <View style={styles.header}>
+
        <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
       <IconButton 
         icon="cog" 
@@ -54,6 +55,15 @@ const Header = ({ navigation, setIsDarkMode }) => {
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
         onPress={() => navigation.navigate('MyDetails')} 
+
+      {/* Asetukset-painike 
+      <IconButton 
+        icon="cog" 
+        size={30} 
+        onPress={() => navigation.navigate('Settings')}  // Navigointi Asetukset-näyttöön
+      />
+*/}
+      
       />
       </View>
       {/* Modal for theme selection */}
