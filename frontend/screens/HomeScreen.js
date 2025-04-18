@@ -1,18 +1,23 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, useTheme } from 'react-native-paper';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, setIsDarkMode }) => {
+  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
-      <Header navigation={navigation} />
+    <SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
+     { <Header navigation={navigation} setIsDarkMode={setIsDarkMode} /> }
+      
 
       <View style={styles.mainButtons}>
         <Button 
           mode="contained" 
-          buttonColor="green" 
+          buttonColor={colors.primary} 
+          textColor={colors.onPrimary}
           onPress={() => console.log('Askeleet')} 
           style={styles.button} 
           icon="walk"
@@ -21,8 +26,11 @@ const HomeScreen = ({ navigation }) => {
         </Button>
         <Button 
           mode="contained" 
-          buttonColor="green" 
+
+          buttonColor={colors.primary}
+          textColor={colors.onPrimary}  
           onPress={() => navigation.navigate('SleepEntry')} 
+
           style={styles.button} 
           icon="moon-waning-crescent"
         >
@@ -30,7 +38,8 @@ const HomeScreen = ({ navigation }) => {
         </Button>
         <Button 
           mode="contained" 
-          buttonColor="green" 
+          buttonColor={colors.primary}
+          textColor={colors.onPrimary} 
           onPress={() => console.log('Liikunta ja treeni')} 
           style={styles.button} 
           icon="calendar"
@@ -39,11 +48,13 @@ const HomeScreen = ({ navigation }) => {
         </Button>
         <Button 
           mode="contained" 
-          buttonColor="green" 
+ Toinen-Aleksi
+          buttonColor={colors.primary}
+          textColor={colors.onPrimary}
           onPress={() => {
-            console.log('Laskurit');
             navigation.navigate('Calculator'); 
           }}
+
           style={styles.button} 
           icon="calculator"
         >
@@ -51,7 +62,8 @@ const HomeScreen = ({ navigation }) => {
         </Button>
         <Button 
           mode="contained" 
-          buttonColor="green" 
+          buttonColor={colors.primary}
+          textColor={colors.onPrimary}
           onPress={() => console.log('Ruutuaika')} 
           style={styles.button} 
           icon="cellphone"
@@ -59,8 +71,10 @@ const HomeScreen = ({ navigation }) => {
           Ruutuaika
         </Button>
       </View>
+      
       <Footer navigation={navigation} /> 
-    </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
@@ -68,13 +82,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: '#f9f9f9',
-    paddingBottom: 30,
+    padding: 16,
+    backgroundColor: 'transparent',
   },
+  
   mainButtons: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
+  },
+  footerContainer: {
+    flex: 0,
   },
   button: {
     marginVertical: 8,

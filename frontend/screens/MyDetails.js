@@ -145,6 +145,7 @@ export default function MyDetails({ navigation, route }) {
           selectedValue={gender}
           onValueChange={(itemValue) => setGender(itemValue)}
           style={styles.picker}
+          itemStyle={{ color: '#666' }} 
         >
           <Picker.Item label="Valitse sukupuoli" value="" />
           <Picker.Item label="Mies" value="male" />
@@ -164,6 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: 'transparent',
   },
   header: {
     fontSize: 20,

@@ -1,24 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
-import { IconButton } from 'react-native-paper';
+
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { IconButton, useTheme } from 'react-native-paper';
 
 const Footer = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const { colors } = useTheme();
+    console.log('Footer component rendered');
+
+  //const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.footer}>
+      <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
       <IconButton 
         icon="home" 
-        size={30} 
-        onPress={() => navigation.navigate("HomeScreen")} 
+        size={28} 
+        color={colors.onPrimary}
+        iconColor={colors.onPrimary}
+        onPress={() => navigation.navigate('HomeScreen')} 
       />
-
+      </View>
+      <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
       <IconButton 
         icon="plus-circle" 
-        size={30} 
-        color="purple" 
-        onPress={() => console.log('Lisää')} 
+        size={28} 
+        color={colors.onPrimary}
+        iconColor={colors.onPrimary}
+        onPress={() => navigation.navigate('Add')} 
       />
+
+      </View>
+      <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
+      <IconButton 
+        icon="chart-bar" 
+        size={28} 
+        color={colors.onPrimary}
+        iconColor={colors.onPrimary}
+        onPress={() => navigation.navigate('Chart'} 
+      />
+      </View>
 
       <IconButton 
         icon="chart-bar" 
@@ -26,7 +46,7 @@ const Footer = ({ navigation }) => {
         onPress={() => setModalVisible(true)} 
       />
 
-      {/* Modal-valikko */}
+      {/* Modal-valikko 
       <Modal
         transparent={true}
         animationType="slide"
@@ -47,6 +67,8 @@ const Footer = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      */}
+
     </View>
   );
 };
@@ -55,6 +77,11 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    paddingVertical: 8,
+    backgroundColor: 'transparent', // Ensure transparency
+  },
+  roundButton: {
+    borderRadius: 50, // Makes the button round
     paddingVertical: 10,
     backgroundColor: "#ddd",
     borderRadius: 20,
