@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodSelected({id, name, extra, amount, setAmountCallback, deleteCallback}) {
+export default function FoodSelected({id, name, info, amount, setAmountCallback, deleteCallback}) {
     return (
         <View
             style={styles.container}
@@ -13,7 +13,7 @@ export default function FoodSelected({id, name, extra, amount, setAmountCallback
                         {name}
                     </Text>
                     <Text style={styles.text}>
-                        {extra}
+                        {info}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -30,7 +30,7 @@ export default function FoodSelected({id, name, extra, amount, setAmountCallback
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        setAmountCallback(Number(amount) - 50);
+                        setAmountCallback(id, Number(amount) - 50);
                     }}
                 >
                     <Ionicons
@@ -44,7 +44,7 @@ export default function FoodSelected({id, name, extra, amount, setAmountCallback
                     value={amount.toString()}
                     inputMode="numeric"
                     onChangeText={(e) => {
-                        setAmountCallback(Number(e));
+                        setAmountCallback(id, Number(e));
                     }}
                 />
                 <Text style={styles.g}>
@@ -53,7 +53,7 @@ export default function FoodSelected({id, name, extra, amount, setAmountCallback
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                        setAmountCallback(Number(amount) + 50);
+                        setAmountCallback(id, Number(amount) + 50);
                     }}
                 >
                     <Ionicons

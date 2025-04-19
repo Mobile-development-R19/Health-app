@@ -1,37 +1,34 @@
 import { StyleSheet, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodEntry({id, data, deleteEntryCallback}) {
-    function formatDate(dt) {
-        const y = dt.substring(0, 4);
-        const m = dt.substring(4, 6);
-        const d = dt.substring(6, 8);
-        return d + "." + m + "." + y;
-    }
-
+export default function FoodEntry({date, foods, deleteEntryCallback}) {
     return (
         <View style={styles.container}>
             <Text style={styles.date}>
-                {formatDate(id)}
+                {new Date(date).toLocaleDateString("fi-FI", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                })}
             </Text>
             <FlatList
                 scrollEnabled={false}
-                data={data}
-                keyExtractor={(e) => e.id}
+                data={Object.keys(foods)}
+                keyExtractor={(e) => e}
                 renderItem={({item}) => (
                     <View style={styles.entryContainer}>
-                        <View>
-                            <Text style={styles.title} >
-                                ・ {item.name} {item.amount}g
+                        <View style={styles.textContainer}>
+                            <Text style={styles.name} >
+                                {foods[item].name} {foods[item].amount}g
                             </Text>
-                            <Text style={styles.text}>
-                                {item.extra}
+                            <Text style={styles.info}>
+                                {foods[item].info}
                             </Text>
                         </View>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    deleteEntryCallback(id, item.id);
+                                    deleteEntryCallback(date, item);
                                 }}
                             >
                                 <Ionicons
@@ -51,22 +48,31 @@ export default function FoodEntry({id, data, deleteEntryCallback}) {
 const styles = StyleSheet.create({
     container: {
         margin: 10,
+        marginBottom: 0,
+        padding: 10,
+        borderRadius: 20,
+        backgroundColor: "#eee",
     },
     date: {
+        margin: 5,
         fontSize: 20,
-        fontWeight: "bold",
     },
     entryContainer: {
         flexDirection: "row",
+        margin: 5,
+        padding: 10,
+        borderRadius: 12,
+        backgroundColor: "#fff",
     },
-    title: {
-        marginTop: 10,
+    textContainer: {
+        flex: 1,
+    },
+    name: {
         fontSize: 16,
     },
-    text: {
-        marginLeft: 20,
+    info: {
+        flex: 1,
         color: "#aaa",
-        width: 300, // TODO: Use device width - N
     },
     buttonContainer: {
         justifyContent: "center",

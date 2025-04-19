@@ -1,30 +1,32 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodResult({id, name, extra, addCallback}) {
+export default function FoodResult({id, name, info, addCallback}) {
     return (
         <View
             style={styles.container}
             key={id}
         >
-            <View>
+            <View style={styles.textContainer}>
                 <Text style={styles.title} >
                     {name}
                 </Text>
                 <Text style={styles.text}>
-                    {extra}
+                    {info}
                 </Text>
             </View>
-            <TouchableOpacity
-                style={styles.add}
-                onPress={addCallback}
-            >
-                <Ionicons
-                    name="add-circle"
-                    size={32}
-                    color="#6d6"
-                />
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.add}
+                    onPress={addCallback}
+                >
+                    <Ionicons
+                        name="add-circle"
+                        size={32}
+                        color="#6d6"
+                    />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -37,17 +39,21 @@ const styles = StyleSheet.create({
         margin: 10,
         marginBottom: 0,
         borderRadius: 20,
-        borderColor: "#eee",
-        borderWidth: 1,
+        backgroundColor: "#fff",
+    },
+    textContainer: {
+        flex: 1,
     },
     title: {
-        fontSize: 20,
+        fontSize: 16,
     },
     text: {
         color: "#aaa",
-        width: 300, // TODO: Use device width - N
     },
     add: {
+        justifyContent: "center",
+    },
+    buttonContainer: {
         justifyContent: "center",
     },
 });

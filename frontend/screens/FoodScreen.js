@@ -1,258 +1,255 @@
 import { useState, useEffect } from "react";
-import { Keyboard, StyleSheet, ActivityIndicator, FlatList, ScrollView, Text,
-    TextInput, TouchableOpacity, View } from "react-native";
-import { auth, getFirestore, doc, getDoc, updateDoc  } from "../firebase/Config";
-import Constants from "expo-constants";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import FoodResult from "../components/FoodResult";
-import FoodSelected from "../components/FoodSelected";
-import FoodEntry from "../components/FoodEntry";
-import DatePicker from "../components/DatePicker";
+import { StyleSheet, ActivityIndicator, FlatList,
+    ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { auth, getFirestore, doc, setDoc, getDocs, deleteDoc, updateDoc, collection  } from "../firebase/Config";
+import FoodResult from "../components/food/FoodResult";
+import FoodSelected from "../components/food/FoodSelected";
+import FoodEntry from "../components/food/FoodEntry";
+import FoodSearchBar from "../components/food/FoodSearchBar";
+import FoodForm from "../components/food/FoodForm";
 
 export default function FoodScreen() {
-    const [query, setQuery] = useState("");
-    const [results, setResults] = useState([]);
-    const [selected, setSelected] = useState([]);
+    // Ruoat ja ruokien tila
     const [foods, setFoods] = useState({});
     const [showFoods, setShowFoods] = useState(true);
-    const [day, setDay] = useState(0);
-    const [month, setMonth] = useState(0);
-    const [year, setYear] = useState(0);
-    const [disabled, setDisabled] = useState(true);
+    const [reversed, setReversed] = useState(false);
+
+    // Hakutulokset ja valitut ruoat
+    const [query, setQuery] = useState("");
+    const [results, setResults] = useState([]);
+    const [selected, setSelected] = useState({});
+
+    // Indikaattoreita
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("");
 
     useEffect(() => {
-        getFoodsFromDb();
+        setLoading(true);
+        setStatus("");
+
+        if (!getAllFoods())
+            setStatus("Ruokien lataaminen epäonnistui");
+
+        setLoading(false);
     }, []);
 
-    async function getFoodsFromDb() {
-        setLoading(true);
-        setStatus("");
-
-        const db = getFirestore();
+    // Tallennettujen ruokien hakeminen Firestoresta
+    async function getAllFoods() {
         const user = auth.currentUser;
+        const db = getFirestore();
 
         try {
-            const d = await getDoc(doc(db, "users", user.uid));
-            if (d.exists() && d.data().foods)
-                setFoods(d.data().foods);
+            // Haetaan kaikki ruoat Firestoresta
+            const docs = await getDocs(collection(db, "users", user.uid, "foods"));
+
+            // Lisätään ruoat foods-muuttujaan
+            let tmp = {};
+            docs.forEach((doc) => {
+                tmp[doc.id] = doc.data()[doc.id];
+            });
+            setFoods(tmp);
         } catch (error) {
             console.error(error);
-            setStatus("Ruokien lataaminen epäonnistui")
+            return false;
         }
-        setLoading(false);
+
+        return true;
     }
 
-    async function setFoodsToDb(f) {
-        const db = getFirestore();
+    // Ruokien lisäys halutulle päivälle
+    async function addFoodsToDay(date, newFoods) {
         const user = auth.currentUser;
+        const db = getFirestore();
 
-        try {
-            await updateDoc(doc(db, "users", user.uid), {
-                foods: f
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function parseName(n) {
-        const [name, ...extraSplit] = n.split(", ");
-        const extra = extraSplit.length > 0 ? extraSplit.join(", ") : null;
-        return {name, extra};
-    }
-
-    async function doSearch(q) {
-        setResults([]);
-        setStatus("");
-        if (q.length === 0) {
-            if (selected.length === 0)
-                setShowFoods(true);
-            return;
-        }
-        setLoading(true);
-
-        try {
-            const response = await fetch(`https://fineli.fi/fineli/api/v1/foods?q=${q}`, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0"
-                }
-            });
-
-            const data = await response.json();
-            setResults(data.map((e) => {
-                const {name, extra} = parseName(e.name.fi);
-
-                return {
-                    id: e.id,
-                    name,
-                    extra,
-                };
-            }));
-            setLoading(false);
-
-            if (data.length === 0) {
-                setStatus("Ei tuloksia");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    function setAmount(id, amount) {
-        amount = !amount ? 0 : Math.max(amount, 0);
-        setSelected(selected.map((e) => e.id === id ? { ...e, amount } : e));
-    }
-
-    function deleteSelected(id) {
-        setSelected(selected.filter((e) => e.id !== id));
-    }
-
-    function addSelected() {
-        const key = year.toString() + month.toString().padStart(2, "0") + day.toString().padStart(2, "0");
-        const tmp = foods;
-
-        if (tmp[key])
-            tmp[key].push(...selected);
-        else
-            tmp[key] = selected;
-
+        // Lisätään ruoat foods-muuttujaan
+        const tmp = {...foods};
+        tmp[date] = {...tmp[date], ...newFoods};
         setFoods(tmp);
-        setShowFoods(true);
-        setSelected([]);
-        setQuery("");
-        setFoodsToDb(tmp);
+
+        try {
+            // Lisätään ruoat Firestoreen
+            await setDoc(doc(db, "users", user.uid, "foods", date),
+                tmp,
+                { merge: true }
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function removeFoodFromDay(date, id) {
+        const user = auth.currentUser;
+        const db = getFirestore();
+
+        // Poistetaan ruoka foods-muuttujasta
+        let tmp = {...foods};
+        delete tmp[date][id];
+        if (Object.keys(tmp[date]).length === 0)
+            delete tmp[date];
+        setFoods(tmp);
+
+        try {
+            // Poistetaan dokumentti Firestoresta, jos se on tyhjä
+            if (tmp[date] === undefined) {
+                await deleteDoc(doc(db, "users", user.uid, "foods", date));
+                return;
+            }
+
+            // Poistetaan ruoka Firestoresta
+            await updateDoc(doc(db, "users", user.uid, "foods", date), {
+                [date]: tmp[date]
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
         <View style={styles.container}>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    value={query}
-                    placeholder="Lisää ruokia..."
-                    placeholderTextColor="#bbb"
-                    onChangeText={(e) => {
-                        setQuery(e);
-                        setShowFoods(false);
-                        doSearch(e);
-                    }}
-                />
-                <TouchableOpacity
-                    onPress={() => {
-                        Keyboard.dismiss();
-                        setQuery("");
+            {/* Hakukenttä ruokien lisäystä varten */}
+            <View style={styles.searchContainer}>
+                <FoodSearchBar
+                    query={query}
+                    setQueryCallback={setQuery}
+
+                    // Nollataan vanhat hakutulokset ja näytetään lataus-indikaattori
+                    onSearchStart={(e) => {
                         setResults([]);
-                        if (selected.length === 0)
+                        setStatus("");
+                        setLoading(true);
+                        setShowFoods(false);
+
+                        if (e.length === 0 && Object.keys(selected).length === 0) {
+                            setShowFoods(true);
+                            setLoading(false);
+                        }
+                    }}
+
+                    // Näytetään hakutulokset tai ilmoitetaan käyttäjälle,
+                    // jos hakutuloksia ei löytynyt
+                    onSearchEnd={(e) => {
+                        setLoading(false);
+
+                        if (e.length === 0) {
+                            setStatus("Ei tuloksia");
+                            return;
+                        }
+
+                        setShowFoods(false);
+                        setResults(e);
+                    }}
+
+                    // Tyhjennetään hakutulokset
+                    onSearchClear={() => {
+                        setResults([]);
+                        setStatus("");
+                        setLoading(false);
+
+                        if (Object.keys(selected).length === 0)
                             setShowFoods(true);
                     }}
-                >
-                    <Ionicons
-                        name="close-circle"
-                        size={32}
-                        color="#f77"
-                    />
-                </TouchableOpacity>
+                />
             </View>
-            <ScrollView stickyHeaderIndices={[1]}>
+
+            <ScrollView>
                 {showFoods
-                    ? <View>
+                    ? <>
+                        {/* Tallennettujen ruokien järjestyksen vaihtaminen */}
+                        <TouchableOpacity
+                            onPress={() => {
+                                setReversed(!reversed);
+                            }}
+                        >
+                            <Text style={{fontSize: 16, textAlign: "right", marginTop: 10, marginRight: 20}}>
+                                {reversed ? "Uusimmat ensin" : "Vanhimmat ensin"}
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* Listataan tallennetut ruoat */}
                         <FlatList
                             contentContainerStyle={styles.foodsContainer}
                             scrollEnabled={false}
-                            data={Object.keys(foods).sort((a, b) => (+b) - (+a))}
+                            data={reversed
+                                ? Object.keys(foods).sort((a, b) => a.localeCompare(b))
+                                : Object.keys(foods).sort((a, b) => b.localeCompare(a))
+                            }
                             keyExtractor={(e) => e}
                             renderItem={({item}) => (
                                 <FoodEntry
-                                    id={item}
-                                    data={foods[item]}
-                                    deleteEntryCallback={(id, itemId) => {
-                                        const tmp = { ...foods };
-                                        tmp[id] = tmp[id].filter((e) => e.id !== itemId);
-                                        if (tmp[id].length === 0)
-                                            delete tmp[id];
-                                        setFoods(tmp);
-                                        setFoodsToDb(tmp);
+                                    date={item}
+                                    foods={foods[item]}
+
+                                    // Tallennetun ruoan poistaminen
+                                    deleteEntryCallback={(date, id) => {
+                                        removeFoodFromDay(date, id);
                                     }}
                                 />
                             )}
                         />
-                    </View>
-                    : <View>
+                    </>
+                    : <>
+                        {/* Listataan hakutuloksista valitut ruoat */}
                         <FlatList
                             contentContainerStyle={styles.selectedContainer}
                             scrollEnabled={false}
-                            data={selected}
-                            keyExtractor={(e) => e.id}
+                            data={Object.keys(selected)}
+                            keyExtractor={(e) => e}
                             renderItem={({item}) => (
                                 <FoodSelected
-                                    id={item.id}
-                                    name={item.name}
-                                    extra={item.extra}
-                                    amount={item.amount}
-                                    setAmountCallback={(amount) => {
-                                        setAmount(item.id, amount);
+                                    id={item}
+                                    name={selected[item].name}
+                                    info={selected[item].info}
+                                    amount={selected[item].amount}
+
+                                    // Valitun ruoan määrän asettaminen
+                                    setAmountCallback={(id, amount) => {
+                                        amount = !amount ? 0 : Math.max(amount, 0);
+                                        let tmp = {...selected};
+                                        tmp[id].amount = amount;
+                                        setSelected(tmp);
                                     }}
+
+                                    // Valitun ruoan poistaminen
                                     deleteCallback={(id) => {
-                                        deleteSelected(id);
+                                        let tmp = {...selected};
+                                        delete tmp[id];
+                                        setSelected(tmp);
+
+                                        if (Object.keys(tmp).length === 0 && results.length === 0)
+                                            setShowFoods(true);
                                     }}
                                 />
                             )}
                         />
+
+                        {/* Valikko ruokien lisäykseen */}
                         <View>
-                            {selected.length > 0
-                                ? <View style={styles.buttonsContainer}>
-                                    <View>
-                                        <DatePicker
-                                            day={day}
-                                            month={month}
-                                            year={year}
-                                            setDay={setDay}
-                                            setMonth={setMonth}
-                                            setYear={setYear}
-                                            onChange={(e) => {
-                                                setDisabled(!e);
-                                            }}
-                                        />
-                                    </View>
-                                    <View style={styles.buttonContainer}>
-                                        <TouchableOpacity
-                                            style={[styles.button, {
-                                                backgroundColor: "#f77",
-                                                borderColor: "#d55",
-                                                marginRight: 5,
-                                            }]}
-                                            onPress={() => {
-                                                setSelected([]);
-                                                if (query.length === 0)
-                                                    setShowFoods(true);
-                                            }}
-                                        >
-                                            <Text style={styles.text}>
-                                                Poista valinta
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[disabled ? {...styles.button, ...styles.disabled} : styles.button, {
-                                                backgroundColor: "#6d6",
-                                                borderColor: "#0a0",
-                                                marginLeft: 5,
-                                            }]}
-                                            onPress={() => {
-                                                addSelected();
-                                            }}
-                                            disabled={disabled}
-                                        >
-                                            <Text style={styles.text}>
-                                                Lisää valinta
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
+                            {Object.keys(selected).length > 0
+                                ? <View style={styles.formContainer}>
+                                    <FoodForm
+                                        // Valittujen ruokien lisääminen
+                                        onSubmit={(e) => {
+                                            addFoodsToDay(e, selected);
+
+                                            setSelected([]);
+                                            setResults([]);
+                                            setShowFoods(true);
+                                            setQuery("");
+                                        }}
+
+                                        // Valittujen ruokien poistaminen
+                                        onCancel={() => {
+                                            setSelected([]);
+                                            if (query.length === 0)
+                                                setShowFoods(true);
+                                        }}
+                                    />
                                 </View>
                                 : null
                             }
                         </View>
+
+                        {/* Hakutulokset */}
                         <FlatList
                             contentContainerStyle={styles.resultsContainer}
                             scrollEnabled={false}
@@ -262,42 +259,37 @@ export default function FoodScreen() {
                                 <FoodResult
                                     id={item.id}
                                     name={item.name}
-                                    extra={item.extra}
+                                    info={item.info}
+
+                                    // Haetuloksen lisääminen valittuihin ruokiin
                                     addCallback={() => {
-                                        setSelected([...selected, {
-                                                id: item.id,
-                                                name: item.name,
-                                                extra: item.extra,
-                                                amount: 100,
-                                            },
-                                        ]);
+                                        let tmp = {...selected};
+                                        tmp[item.id] = {
+                                            name: item.name,
+                                            info: item.info,
+                                            amount: 100,
+                                        };
+                                        setSelected(tmp);
                                     }}
                                 />
                             )}
                         />
-                    </View>
+                    </>
                 }
+
+                {/* Lataus-indikaattori */}
                 {loading &&
                     <ActivityIndicator
-                        style={{
-                            marginTop: 20,
-                        }}
+                        style={{marginTop: 20}}
                         size="large"
                         color="#000"
                     />
                 }
+
+                {/* Status-indikaattori */}
                 {status.length > 0 &&
-                    <View
-                        style={{
-                            marginTop: 20,
-                            alignItems: "center",
-                        }}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 20
-                            }}
-                        >
+                    <View style={{marginTop: 20, alignItems: "center"}}>
+                        <Text style={{fontSize: 20}}>
                             {status}
                         </Text>
                     </View>
@@ -310,57 +302,15 @@ export default function FoodScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
-        paddingTop: Constants.statusBarHeight,
     },
-    inputContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        backgroundColor: "#fff",
+    searchContainer: {
         margin: 10,
-        padding: 10,
-        borderRadius: 20,
-        borderColor: "#ddd",
-        borderWidth: 1,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 5
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-    },
-    input: {
-        flex: 1,
-        marginLeft: 6,
-        fontSize: 18,
     },
     selectedContainer: {
         justifyContent: "flex-start",
     },
-    buttonsContainer: {
+    formContainer: {
         margin: 10,
-    },
-    buttonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 10,
-        backgroundColor: "#fff",
-    },
-    button: {
-        flex: 1,
-        alignItems: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 16,
-        borderWidth: 3,
-    },
-    disabled: {
-        opacity: 0.25,
-    },
-    text: {
-        fontSize: 16,
-        color: "#fff",
     },
     resultsContainer: {
         justifyContent: "flex-start",

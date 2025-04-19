@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const daysPerMonth = [
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 ];
-
 
 export default function DatePicker({day, month, year, setDay, setMonth, setYear, onChange}) {
     function isLeapYear(y) {
@@ -75,7 +73,7 @@ export default function DatePicker({day, month, year, setDay, setMonth, setYear,
                     const dt = new Date();
                     setYear(dt.getFullYear());
                     setMonth(dt.getMonth() + 1);
-                    setDay(dt.getDay());
+                    setDay(dt.getDate());
                     onChange(1);
                 }}
             >

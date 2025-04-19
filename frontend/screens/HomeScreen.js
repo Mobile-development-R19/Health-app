@@ -47,7 +47,6 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
         </Button>
         <Button
           mode="contained"
- Toinen-Aleksi
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
           onPress={() => {
@@ -71,12 +70,13 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
         </Button>
         <Button
           mode="contained"
-          buttonColor="brown"
+          buttonColor={colors.primary}
+          textColor={colors.onPrimary}
           onPress={() => navigation.navigate("Food")}
           style={styles.button}
           icon="food"
         >
-          Ruoka
+          Ruokapäiväkirja
         </Button>
       </View>
 

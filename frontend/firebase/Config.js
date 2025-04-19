@@ -17,6 +17,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
   updateDoc
 } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
@@ -55,5 +56,6 @@ export {
   doc,
   setDoc,
   getDoc,
+  getDocs,
   updateDoc
 };
