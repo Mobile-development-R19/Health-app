@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, ActivityIndicator, FlatList,
+import { StyleSheet, ActivityIndicator, FlatList, Modal,
     ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { auth, getFirestore, doc, setDoc, getDocs, deleteDoc, updateDoc, collection  } from "../firebase/Config";
 import FoodResult from "../components/food/FoodResult";
 import FoodSelected from "../components/food/FoodSelected";
 import FoodEntry from "../components/food/FoodEntry";
 import FoodSearchBar from "../components/food/FoodSearchBar";
 import FoodForm from "../components/food/FoodForm";
+import FoodInfo from "../components/food/FoodInfo";
 
 export default function FoodScreen() {
-    // Ruoat ja ruokien tila
+    // Ruoat ja tilamuuttujat
     const [foods, setFoods] = useState({});
     const [showFoods, setShowFoods] = useState(true);
     const [reversed, setReversed] = useState(false);
@@ -22,6 +24,10 @@ export default function FoodScreen() {
     // Indikaattoreita
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("");
+
+    // Ravintotiedot
+    const [visible, setVisible] = useState(false);
+    const [nutrients, setNutrients] = useState({});
 
     useEffect(() => {
         setLoading(true);
@@ -104,8 +110,65 @@ export default function FoodScreen() {
         }
     }
 
+    async function showInfoForFood(name, info, id, amount) {
+        try {
+            // Haetaan ruoan ravintotiedot Finelin API:sta
+            const response = await fetch(`https://fineli.fi/fineli/api/v1/foods/${id}`, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0",
+                }
+            });
+            const data = await response.json();
+
+            // Asetetaan ravintoarvot muuttujaan
+            const f = (n, d=1) => ((n || 0) / data.mass * amount / d).toFixed(1);
+            setNutrients({
+                fat: f(data.fat),
+                saturatedFats: f(data.saturatedFats),
+                carbohydrates: f(data.carbohydrates),
+                protein: f(data.protein),
+                sugar: f(data.sugar),
+                fiber: f(data.fiber),
+                salt: f(data.salt, 1000), // Jostain syystä suola annetaan milligrammoina
+                alcohol: f(data.alcohol),
+                energy: f(data.energyKcal),
+
+                name: name,
+                info: info,
+                amount: amount,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+
+        setVisible(true);
+    }
+
     return (
-        <View style={styles.container}>
+        <SafeAreaProvider style={styles.container}>
+            <SafeAreaView style={[styles.centered, {position: "absolute"}]}>
+                <Modal
+                    animationType="fade"
+                    visible={visible}
+                    transparent={true}
+                    onRequestClose={() => {
+                        setVisible(!visible);
+                    }}
+                >
+                    <View style={styles.centered}>
+                        <FoodInfo
+                            name={nutrients.name}
+                            info={nutrients.info}
+                            amount={nutrients.amount}
+                            nutrients={nutrients}
+                            onClose={() => {
+                                setVisible(!visible);
+                            }}
+                        />
+                    </View>
+                </Modal>
+            </SafeAreaView>
+
             {/* Hakukenttä ruokien lisäystä varten */}
             <View style={styles.searchContainer}>
                 <FoodSearchBar
@@ -179,6 +242,16 @@ export default function FoodScreen() {
                                     date={item}
                                     foods={foods[item]}
 
+                                    // Ravintotietojen näyttäminen
+                                    onPress={(id) => {
+                                        showInfoForFood(
+                                            foods[item][id].name,
+                                            foods[item][id].info,
+                                            id,
+                                            foods[item][id].amount
+                                        );
+                                    }}
+
                                     // Tallennetun ruoan poistaminen
                                     deleteEntryCallback={(date, id) => {
                                         removeFoodFromDay(date, id);
@@ -200,6 +273,16 @@ export default function FoodScreen() {
                                     name={selected[item].name}
                                     info={selected[item].info}
                                     amount={selected[item].amount}
+
+                                    // Ravintotietojen näyttäminen
+                                    onPress={(id) => {
+                                        showInfoForFood(
+                                            selected[item].name,
+                                            selected[item].info,
+                                            id,
+                                            selected[item].amount
+                                        );
+                                    }}
 
                                     // Valitun ruoan määrän asettaminen
                                     setAmountCallback={(id, amount) => {
@@ -261,6 +344,16 @@ export default function FoodScreen() {
                                     name={item.name}
                                     info={item.info}
 
+                                    // Ravintotietojen näyttäminen
+                                    onPress={(id) => {
+                                        showInfoForFood(
+                                            item.name,
+                                            item.info,
+                                            id,
+                                            100
+                                        );
+                                    }}
+
                                     // Haetuloksen lisääminen valittuihin ruokiin
                                     addCallback={() => {
                                         let tmp = {...selected};
@@ -295,13 +388,18 @@ export default function FoodScreen() {
                     </View>
                 }
             </ScrollView>
-        </View>
+        </SafeAreaProvider>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    centered: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     searchContainer: {
         margin: 10,

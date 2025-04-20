@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodSelected({id, name, info, amount, setAmountCallback, deleteCallback}) {
+export default function FoodSelected({id, name, info, amount, onPress, setAmountCallback, deleteCallback}) {
     return (
         <View
             style={styles.container}
@@ -9,12 +9,18 @@ export default function FoodSelected({id, name, info, amount, setAmountCallback,
         >
             <View style={styles.topContainer}>
                 <View>
-                    <Text style={styles.title} >
-                        {name}
-                    </Text>
-                    <Text style={styles.text}>
-                        {info}
-                    </Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            onPress(id);
+                        }}
+                    >
+                        <Text style={styles.title} >
+                            {name}
+                        </Text>
+                        <Text style={styles.info}>
+                            {info}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                     onPress={() => deleteCallback(id)}
@@ -85,9 +91,9 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
     },
-    text: {
+    info: {
         color: "#aaa",
-        width: 300, // TODO: Use device width - N
+        width: 300,
     },
     bottomContainer: {
         flexDirection: "row",
