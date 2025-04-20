@@ -1,7 +1,7 @@
 import { StyleSheet, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodEntry({date, foods, deleteEntryCallback}) {
+export default function FoodEntry({date, foods, onPress, deleteEntryCallback}) {
     return (
         <View style={styles.container}>
             <Text style={styles.date}>
@@ -18,12 +18,18 @@ export default function FoodEntry({date, foods, deleteEntryCallback}) {
                 renderItem={({item}) => (
                     <View style={styles.entryContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.name} >
-                                {foods[item].name} {foods[item].amount}g
-                            </Text>
-                            <Text style={styles.info}>
-                                {foods[item].info}
-                            </Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    onPress(item);
+                                }}
+                            >
+                                <Text style={styles.name} >
+                                    {foods[item].name} {foods[item].amount}g
+                                </Text>
+                                <Text style={styles.info}>
+                                    {foods[item].info}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity

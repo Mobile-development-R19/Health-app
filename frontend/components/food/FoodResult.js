@@ -1,19 +1,25 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-export default function FoodResult({id, name, info, addCallback}) {
+export default function FoodResult({id, name, info, onPress, addCallback}) {
     return (
         <View
             style={styles.container}
             key={id}
         >
             <View style={styles.textContainer}>
-                <Text style={styles.title} >
-                    {name}
-                </Text>
-                <Text style={styles.text}>
-                    {info}
-                </Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        onPress(id);
+                    }}
+                >
+                    <Text style={styles.title} >
+                        {name}
+                    </Text>
+                    <Text style={styles.text}>
+                        {info}
+                    </Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
