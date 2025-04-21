@@ -138,6 +138,9 @@ export default function App() {
                 <Stack.Screen name="Food">
                   {(props) => <FoodScreen {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
+                <Stack.Screen name="Settings">
+                  {(props) => <Settings {...props} setIsDarkMode={setIsDarkMode} />}
+                  </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
           </SafeAreaView>
