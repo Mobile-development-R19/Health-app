@@ -39,7 +39,7 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
           mode="contained"
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
-          onPress={() => console.log('Liikunta ja treeni')}
+          onPress={() => navigation.navigate('SportsData')}
           style={styles.button}
           icon="calendar"
         >

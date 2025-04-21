@@ -39,13 +39,13 @@ export default function Footer({ navigation }) {
       />
       </View>
 
-      <IconButton
+     {/* <IconButton
         icon="chart-bar"
         size={30}
         onPress={() => setModalVisible(true)}
       />
 
-      {/* Modal-valikko
+       Modal-valikko
       <Modal
         transparent={true}
         animationType="slide"

@@ -67,14 +67,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f9f9f9',
     paddingBottom: 60, // Varmistaa, että painike ei mene FlatListin alle
   },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#333',
+    color: '#000',
   },
   entry: {
     backgroundColor: '#e0ffe0',
@@ -97,6 +96,7 @@ const styles = StyleSheet.create({
     position: 'center',
     bottom: 20,
     padding: 15,
+    marginTop: 25,
     backgroundColor: '#4CAF50',
     alignItems: 'center',
     width: '100%',

@@ -142,16 +142,15 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F0F4F8',
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 40,
-    color: '#333',
+    color: '#000000',
   },
   themeButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FFFFFF',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   themeButtonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   deleteButton: {
-    backgroundColor: '#FCE4E4',
+    backgroundColor: '#FFFFFF',
   },
   cardButtonText: {
     fontSize: 16,
