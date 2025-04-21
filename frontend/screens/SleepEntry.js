@@ -167,13 +167,18 @@ export default function SleepEntry({ navigation }) {
           }}
         />
       )}
+      <View style={styles.buttonWrapper}>
+        <Button title="Tallenna uni" onPress={saveSleepData} />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
+            
+          </View>
+          <View style={styles.buttonWrapper}>
+            <Button title="Takaisin" onPress={() => navigation.goBack()} />
 
-      {/* Save Button */}
-      <Button title="Tallenna uni" onPress={saveSleepData} />
-      <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
+            </View>
 
-      {/* "Takaisin" painike */}
-      <Button title="Takaisin" onPress={() => navigation.goBack()} />
     </View>
   );
 }
@@ -181,14 +186,13 @@ export default function SleepEntry({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#eef',
     flex: 1,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333',
+    color: '#000',
   },
   timeField: {
     padding: 15,
@@ -202,4 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
   },
+  buttonWrapper: {
+    marginVertical: 8, 
+  },  
 });

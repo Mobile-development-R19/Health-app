@@ -20,6 +20,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { lightTheme, darkTheme } from './theme/Themes'; 
 import { auth, getFirestore, doc, setDoc, getDoc } from './firebase/Config';
 import FoodScreen from './screens/FoodScreen';
+import SportsData from './screens/SportsData';
 
 const Stack = createStackNavigator();
 
@@ -141,6 +142,9 @@ export default function App() {
                 <Stack.Screen name="Settings">
                   {(props) => <Settings {...props} setIsDarkMode={setIsDarkMode} />}
                   </Stack.Screen>
+                  <Stack.Screen name="SportsData">
+                  {(props) => <SportsData {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
           </SafeAreaView>
