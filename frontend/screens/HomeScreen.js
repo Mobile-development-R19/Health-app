@@ -50,7 +50,7 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
           buttonColor={colors.primary}
           textColor={colors.onPrimary}
           onPress={() => {
-            navigation.navigate('Calculator');
+            navigation.navigate('CalculatorScreen');
           }}
 
           style={styles.button}
