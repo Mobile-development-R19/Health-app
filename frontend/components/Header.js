@@ -3,7 +3,6 @@ import { View, StyleSheet, Modal, Text, TouchableOpacity } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
 import { auth, getFirestore, doc, setDoc } from '../firebase/Config';
 
-
 const Header = ({ navigation, setIsDarkMode }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const { colors } = useTheme();
@@ -15,17 +14,17 @@ const Header = ({ navigation, setIsDarkMode }) => {
         alert('User is not logged in.');
         return;
       }
-  
+
       const db = getFirestore();
       const userDocRef = doc(db, "users", user.uid);
-  
+
       // Tallenna teema Firebaseen
       await setDoc(
         userDocRef,
         { theme: theme }, // Tallenna valittu teema
-        { merge: true } // Yhdistä olemassa olevaan dokumenttiin  
+        { merge: true } // Yhdistä olemassa olevaan dokumenttiin 
       );
-  
+
       setIsDarkMode(theme === 'dark');
       setModalVisible(false);
     } catch (error) {
@@ -40,30 +39,30 @@ const Header = ({ navigation, setIsDarkMode }) => {
     <View style={styles.header}>
 
        <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
-      <IconButton 
-        icon="cog" 
-        size={30} 
+      <IconButton
+        icon="cog"
+        size={30}
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => setModalVisible(true)} 
+        onPress={() => setModalVisible(true)}
       />
       </View>
       <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
-      <IconButton 
-        icon="account" 
-        size={30} 
+      <IconButton
+        icon="account"
+        size={30}
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => navigation.navigate('MyDetails')} 
+        onPress={() => navigation.navigate('MyDetails')}
 
-      {/* Asetukset-painike 
-      <IconButton 
-        icon="cog" 
-        size={30} 
-        onPress={() => navigation.navigate('Settings')}  // Navigointi Asetukset-näyttöön
-      />
-*/}
-      
+      // {/* Asetukset-painike
+      // <IconButton
+      //   icon="cog"
+      //   size={30}
+      //   onPress={() => navigation.navigate('Settings')}  // Navigointi Asetukset-näyttöön
+      // />
+      // */}
+
       />
       </View>
       {/* Modal for theme selection */}
@@ -71,25 +70,25 @@ const Header = ({ navigation, setIsDarkMode }) => {
         visible={modalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)} 
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Valitse Teema</Text>
-            <TouchableOpacity 
-              style={styles.optionButton} 
+            <TouchableOpacity
+              style={styles.optionButton}
               onPress={() => handleThemeChange('light')}
             >
               <Text style={styles.optionText}>Vaalea</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.optionButton} 
+            <TouchableOpacity
+              style={styles.optionButton}
               onPress={() => handleThemeChange('dark')}
             >
               <Text style={styles.optionText}>Tumma</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.optionButton} 
+            <TouchableOpacity
+              style={styles.optionButton}
               onPress={() => setModalVisible(false)}
             >
               <Text style={styles.optionText}>Peruuta</Text>

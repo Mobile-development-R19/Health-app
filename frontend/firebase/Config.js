@@ -15,7 +15,10 @@ import {
   onSnapshot,
   deleteDoc,
   doc,
-  setDoc
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc
 } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 
@@ -51,5 +54,8 @@ export {
   onSnapshot,
   deleteDoc,
   doc,
-  setDoc
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc
 };

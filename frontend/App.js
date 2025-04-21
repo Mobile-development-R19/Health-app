@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ImageBackground, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +19,7 @@ import Add from './screens/Add';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { lightTheme, darkTheme } from './theme/Themes'; 
 import { auth, getFirestore, doc, setDoc, getDoc } from './firebase/Config';
+import FoodScreen from './screens/FoodScreen';
 
 const Stack = createStackNavigator();
 
@@ -69,16 +69,16 @@ export default function App() {
         alert('Käyttäjä ei ole kirjautunut sisään.');
         return;
       }
-  
+
       const db = getFirestore();
       const userDocRef = doc(db, "users", user.uid);
-  
+
       await setDoc(
         userDocRef,
         { theme: isDark ? 'dark' : 'light' },
         { merge: true }
       );
-  
+
       setIsDarkMode(isDark);
     } catch (error) {
       console.error('Virhe teemaa tallentaessa:', error);
@@ -134,6 +134,9 @@ export default function App() {
                 </Stack.Screen>
                 <Stack.Screen name="CalculatorScreen">
                   {(props) => <CalculatorScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                </Stack.Screen>
+                <Stack.Screen name="Food">
+                  {(props) => <FoodScreen {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>

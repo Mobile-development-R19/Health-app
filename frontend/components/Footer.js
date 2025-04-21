@@ -1,52 +1,51 @@
-
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
 
-const Footer = ({ navigation }) => {
+export default function Footer({ navigation }) {
   const { colors } = useTheme();
-    console.log('Footer component rendered');
+  console.log('Footer component rendered');
 
   //const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.footer}>
       <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
-      <IconButton 
-        icon="home" 
-        size={28} 
+      <IconButton
+        icon="home"
+        size={28}
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => navigation.navigate('HomeScreen')} 
+        onPress={() => navigation.navigate('HomeScreen')}
       />
       </View>
       <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
-      <IconButton 
-        icon="plus-circle" 
-        size={28} 
+      <IconButton
+        icon="plus-circle"
+        size={28}
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => navigation.navigate('Add')} 
+        onPress={() => navigation.navigate('Add')}
       />
 
       </View>
       <View style={[styles.roundButton, { backgroundColor: colors.primary }]}>
-      <IconButton 
-        icon="chart-bar" 
-        size={28} 
+      <IconButton
+        icon="chart-bar"
+        size={28}
         color={colors.onPrimary}
         iconColor={colors.onPrimary}
-        onPress={() => navigation.navigate('ChartScreen'} 
+        onPress={() => navigation.navigate('ChartScreen')}
       />
       </View>
 
-      <IconButton 
-        icon="chart-bar" 
-        size={30} 
-        onPress={() => setModalVisible(true)} 
+      <IconButton
+        icon="chart-bar"
+        size={30}
+        onPress={() => setModalVisible(true)}
       />
 
-      {/* Modal-valikko 
+      {/* Modal-valikko
       <Modal
         transparent={true}
         animationType="slide"
@@ -105,5 +104,3 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
 });
-
-export default Footer;
