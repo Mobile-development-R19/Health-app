@@ -2,7 +2,11 @@ import { useEffect, useState, } from "react";
 import { StyleSheet, Text, View, Platform } from "react-native";
 import { initialize, requestPermission, readRecords } from "react-native-health-connect"; 
 import { Pedometer } from "expo-sensors";
-import { setDoc, db, doc, auth } from "../firebase/Config";
+import { db, setDoc, doc } from "../firebase/Config";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth()
+
 
 export default function StepCount() {
   const [isAvailable, setIsAvailable] = useState("checking")  // Tilamuuttuja debuggaukseen, onko data saatavilla
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: 20,
     borderRadius: 20,
     shadowColor: "#000",

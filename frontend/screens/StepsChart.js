@@ -9,7 +9,7 @@ import { ActivityIndicator } from "react-native";
 const MIN = 10;
 const MAX = 1000;
 
-export default function ChartScreen({ navigation }) {
+export default function StepsChart({ navigation }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false)
 
@@ -101,7 +101,6 @@ export default function ChartScreen({ navigation }) {
                     </View>
                 )}
                 </View>
-                <SleepChart />
             </View>
         </ScrollView>
     );

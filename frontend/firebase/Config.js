@@ -20,7 +20,6 @@ import {
   getDocs,
   updateDoc
 } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -40,11 +39,11 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
 
-const database = getDatabase(app);
+const db = getFirestore(app);
 
 export {
   auth,
-  database,
+  db,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   getFirestore,

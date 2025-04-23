@@ -1,4 +1,4 @@
-import { Keyboard, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function FoodSearchBar({query, setQueryCallback, onSearchStart, onSearchEnd, onSearchClear}) {
@@ -54,32 +54,37 @@ export default function FoodSearchBar({query, setQueryCallback, onSearchStart, o
     }
 
     return (
-        <View style={styles.inputContainer}>
-            {/* Hakukenttä */}
-            <TextInput
-                style={styles.input}
-                value={query}
-                placeholder="Lisää ruokia..."
-                placeholderTextColor="#bbb"
-                onChangeText={(e) => {
-                    doSearch(e);
-                }}
-            />
-
-            {/* Nappi hakukentän tyhjentämiseen */}
-            <TouchableOpacity
-                onPress={() => {
-                    Keyboard.dismiss();
-                    setQueryCallback("");
-                    onSearchClear();
-                }}
-            >
-                <Ionicons
-                    name="close-circle"
-                    size={32}
-                    color="#f77"
+        <View>
+            <View style={styles.inputContainer}>
+                {/* Hakukenttä */}
+                <TextInput
+                    style={styles.input}
+                    value={query}
+                    placeholder="Lisää ruokia..."
+                    placeholderTextColor="#bbb"
+                    onChangeText={(e) => {
+                        doSearch(e);
+                    }}
                 />
-            </TouchableOpacity>
+
+                {/* Nappi hakukentän tyhjentämiseen */}
+                <TouchableOpacity
+                    onPress={() => {
+                        Keyboard.dismiss();
+                        setQueryCallback("");
+                        onSearchClear();
+                    }}
+                >
+                    <Ionicons
+                        name="close-circle"
+                        size={32}
+                        color="#f77"
+                    />
+                </TouchableOpacity>
+            </View>
+            <Text style={styles.text}>
+                Ravintotiedot: THL, Fineli
+            </Text>
         </View>
     );
 }
@@ -97,4 +102,9 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 20,
     },
+    text: {
+        marginLeft: 10,
+        marginTop: 5,
+        color: "#77b",
+    }
 });
