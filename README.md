@@ -2,5 +2,4 @@
 
 ## 🔐 Google-kirjautuminen (Demo)
 
-<video src="./assets/GoogleLogin-demo.webm" controls width="600" />
-
+![Google-kirjautumisen demo](./assets/GoogleLogin-demo-ezgif.com-video-to-gif-converter.gif)
