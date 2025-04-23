@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import StepCount from '../components/StepCount';
 
 export default function HomeScreen({ navigation, setIsDarkMode }) {
   const { colors } = useTheme();
@@ -15,6 +16,8 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
             resizeMode="contain"
           />
         </View>
+
+        <StepCount />
 
       <View style={styles.mainButtons}>
         <Button 
