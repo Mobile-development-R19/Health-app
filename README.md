@@ -1,6 +1,12 @@
 # Health-app
 
 ### Sovelluksen käyttöönotto
+
+Tarvitset .env-tiedoston, jossa Firebase configuraatiot
+
+Sitten terminaaliin:
+
+
 npm install
 
 
