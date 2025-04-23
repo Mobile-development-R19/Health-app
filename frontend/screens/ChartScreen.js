@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import TabBar from "../components/TabBar";
 import Chart from "../components/Chart";
@@ -8,9 +8,11 @@ const MIN = 10;
 const MAX = 1000;
 
 export default function ChartScreen({ navigation }) {
-    const [data, setData] = useState([
-        30, 40, 50, 20, 10, 30, 40, 50, 40, 10, 30, 20
-    ]);
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false)
+
+    /*
+    Generoitu data testivaiheeseen
 
     function random(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -22,6 +24,55 @@ export default function ChartScreen({ navigation }) {
             tmp.push(random(MIN, MAX));
         setData(tmp);
     }
+        */
+
+    const showStepData = async (count = 1) => {
+        try {
+            setLoading(true)
+            const user = auth.currentUser;
+            if (!user) {
+                console.log("User not signed in");
+                setLoading(false)
+                return;
+            }
+    
+            const uid = user.uid;
+            const today = new Date();
+    
+            const promises = [];
+    
+            for (let i = 0; i < count; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateId = date.toISOString().split("T")[0];
+                const ref = doc(db, "users", uid, "steps", dateId);
+                promises.push(getDoc(ref));
+            }
+    
+            const snapshots = await Promise.all(promises);
+            const stepsArray = snapshots.map((snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    return d.steps ?? 0;
+                } else {
+                    return 0;
+                }
+            });
+    
+            // Päiväkohtainen data käännetään oikein päin (vanhin ensin)
+            setData(stepsArray.reverse());
+            setLoading(false)
+    
+        } catch (error) {
+            console.error("Fetching steps failed: ", error);
+            setData([0]);
+        }
+    };
+
+    // Suoritetaan kun komponentti renderöityy
+    useEffect(() => {
+      showStepData()
+    }, [])
 
     return (
         <ScrollView style={styles.scrollContainer}>
@@ -29,10 +80,9 @@ export default function ChartScreen({ navigation }) {
                 <View style={styles.chartContainer}>
                     <TabBar
                         tabs={[
-                            { title: "Päivä", onPress: () => generateData(24) },
-                            { title: "Viikko", onPress: () => generateData(7) },
-                            { title: "Kuukausi", onPress: () => generateData(30) },
-                            { title: "Vuosi", onPress: () => generateData(12) },
+                            { title: "Päivä", onPress: () => showStepData(24) },
+                            { title: "Viikko", onPress: () => showStepData(7) },
+                            { title: "Kuukausi", onPress: () => showStepData(30) },
                         ]}
                     />
                     <View style={styles.textContainer}>
