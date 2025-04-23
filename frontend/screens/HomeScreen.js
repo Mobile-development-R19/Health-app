@@ -62,16 +62,6 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
         >
           Laskurit (BMI, kalorit jne.)
         </Button>
-        <Button 
-          mode="contained" 
-          buttonColor={colors.primary}
-          textColor={colors.onPrimary}
-          onPress={() => console.log('Ruutuaika')} 
-          style={styles.button} 
-          icon="cellphone"
-        >
-          Ruutuaika
-        </Button>
         <Button
           mode="contained"
           buttonColor={colors.primary}

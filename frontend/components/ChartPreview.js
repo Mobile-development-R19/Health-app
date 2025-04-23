@@ -18,6 +18,7 @@ export default function ChartPreview({navigation, data, title}) {
                 navigation.navigate("Chart");
             }}
         >
+            
             <View style={styles.textContainer}>
                 <Text style={styles.text}>
                     {title}
@@ -44,6 +45,7 @@ export default function ChartPreview({navigation, data, title}) {
                 height={100}
             />
         </Pressable>
+
     );
 }
 

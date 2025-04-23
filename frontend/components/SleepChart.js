@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { getFirestore, collection, doc, getDocs } from 'firebase/firestore';
 import { auth } from '../firebase/Config';
 
 const screenWidth = Dimensions.get('window').width - 40;
 
-// SleepChart-näkymä: näyttää unidatan pylväsdiagrammina ja yksityiskohtina
-export default function SleepChart({ navigation }) {
-  const [data, setData] = useState([]); 
-  const [details, setDetails] = useState([]); 
+export default function SleepChart() {
+  const [data, setData] = useState([]);
 
-  // Hakee ja käsittelee unidatan Firestoresta käyttäjäkohtaisesti
   useEffect(() => {
     const fetchSleepData = async () => {
       const user = auth.currentUser;
@@ -22,7 +19,6 @@ export default function SleepChart({ navigation }) {
         const sleepRef = collection(doc(db, "users", user.uid), "sleepData");
         const snapshot = await getDocs(sleepRef);
 
-        // Raakadata jaetaan, lajitellaan päivämäärän mukaan
         const rawData = snapshot.docs.map(doc => doc.data());
         const sorted = rawData.sort((a, b) => {
           const dateA = new Date(a.sleepDate || a.timestamp?.seconds * 1000);
@@ -30,7 +26,6 @@ export default function SleepChart({ navigation }) {
           return dateA - dateB;
         });
 
-        // Muodostetaan kaaviolle sopiva data
         const transformed = sorted.map(entry => {
           const duration = parseFloat(entry.duration);
           const dateLabel = new Date(entry.sleepDate || entry.timestamp?.seconds * 1000).toLocaleDateString('fi-FI', {
@@ -39,20 +34,11 @@ export default function SleepChart({ navigation }) {
           return {
             value: isNaN(duration) ? 0 : duration,
             label: dateLabel,
-            frontColor: '#4CAF50',
+            frontColor: '#000000', 
           };
         });
 
-        // Muodostetaan lisätiedot yksityiskohtaiselle näkymälle
-        const extra = sorted.map(entry => ({
-          date: entry.sleepDate || new Date(entry.timestamp?.seconds * 1000).toLocaleDateString('fi-FI'),
-          sleepTime: entry.sleepTime,
-          wakeTime: entry.wakeTime,
-          duration: entry.duration
-        }));
-
         setData(transformed);
-        setDetails(extra);
       } catch (error) {
         console.error("Virhe haettaessa unidataa:", error.message);
         alert("Virhe tiedon haussa");
@@ -62,24 +48,18 @@ export default function SleepChart({ navigation }) {
     fetchSleepData();
   }, []);
 
-  // Näytetään latausviesti jos dataa ei vielä ole
   if (data.length === 0) {
     return <Text style={styles.loading}>Ladataan unidataa...</Text>;
   }
 
-  // Määritellään kaavion asetukset skaalautuvasti
   const manyData = data.length > 7;
-  const fixedBarWidth = 20;
-  const fixedSpacing = 15;
-  const barWidth = manyData ? fixedBarWidth : screenWidth / (2 * data.length);
-  const spacing = manyData ? fixedSpacing : screenWidth / (2 * data.length);
-  const chartWidth = manyData ? data.length * (barWidth + spacing) : screenWidth;
+  const barWidth = manyData ? 20 : screenWidth / (2 * data.length);
+  const spacing = manyData ? 15 : screenWidth / (2 * data.length);
+  const chartWidth = data.length * (barWidth + spacing);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.wrapper}>
       <Text style={styles.title}>🛌 Uniseuranta</Text>
-
-      {/* Pylväsdiagrammi kaaviolla ja horisontaalisella skrollauksella */}
       <View style={styles.chartCard}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={{ width: chartWidth }}>
@@ -101,30 +81,14 @@ export default function SleepChart({ navigation }) {
         </ScrollView>
         <Text style={styles.chartNote}>Y-akseli: Tunnit</Text>
       </View>
-
-      {/* Yksityiskohtainen näkymä uniraporteista */}
-      <Text style={styles.subtitle}>📋 Yksityiskohdat</Text>
-      {details.map((item, i) => (
-        <View key={i} style={styles.detailCard}>
-          <Text style={styles.date}>{item.date}</Text>
-          <Text style={styles.text}>🕒 Kesto: {item.duration} h</Text>
-          <Text style={styles.text}>🛏 Nukkumaan: {item.sleepTime}</Text>
-          <Text style={styles.text}>⏰ Herätys: {item.wakeTime}</Text>
-        </View>
-      ))}
-
-      {/* Takaisin-nappi navigointia varten */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backText}>← Takaisin</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#f4f4f4',
+  wrapper: {
+    paddingHorizontal: 20,
+    paddingTop: 30,
   },
   loading: {
     marginTop: 40,
@@ -134,8 +98,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    marginTop: 25,
-    marginBottom: 10,
+    marginBottom: 16,
     textAlign: 'center',
   },
   chartCard: {
@@ -143,46 +106,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 5 },
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOpacity: 0.0001, 
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 1, 
     marginBottom: 20,
   },
   chartNote: {
     textAlign: 'center',
     marginTop: 8,
     color: '#666',
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  detailCard: {
-    backgroundColor: '#e8f5e9',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-  },
-  date: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  text: {
-    fontSize: 14,
-    color: '#333',
-  },
-  backButton: {
-    marginTop: 20,
-    backgroundColor: '#4CAF50',
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  backText: {
-    color: '#fff',
-    fontSize: 16,
   },
 });

@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius:10,
         marginBottom: 15,
-        padding: 10
+        padding: 10,
+        width: "60%",
     },
     link: {
         marginTop: 10,
