@@ -1,4 +1,3 @@
-# Health-app
 
 ## 🔐 Google-kirjautuminen (Demo)
 
