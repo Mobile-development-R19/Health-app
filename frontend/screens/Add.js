@@ -62,6 +62,7 @@ const Add = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.contentConatainer}>
       <View style={styles.titleContainer}>
         <Text style={[styles.title, { color: colors.onPrimary }]}>Kirjaa aktiivisuutesi</Text>
       </View>
@@ -124,6 +125,7 @@ const Add = ({ navigation }) => {
       >
         Cancel
       </Button>
+      </View>
     </View>
   );
 };
@@ -134,6 +136,12 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     backgroundColor: 'transparent',
+  },
+  contentConatainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent white
+    borderRadius: 10,
+    padding: 20,
+    width: "100%",
   },
   titleContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

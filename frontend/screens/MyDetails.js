@@ -95,6 +95,7 @@ export default function MyDetails({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.contentContainer}>
       <Text style={styles.header}>Omat tiedot</Text>
 
       <Text>Käyttäjän nimi: {userName}</Text>
@@ -155,6 +156,7 @@ export default function MyDetails({ navigation, route }) {
 
       <Button title='Tallenna' onPress={savePersonalInfo} />
     </View>
+    </View>
   );
 }
 
@@ -166,6 +168,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     backgroundColor: 'transparent',
+  },
+  contentContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent white
+    borderRadius: 10,
+    padding: 20,
+    width: "100%",
+    alignItems: 'center',
   },
   header: {
     fontSize: 20,

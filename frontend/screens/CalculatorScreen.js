@@ -178,6 +178,9 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+    margin: 10,
   },
   title: {
     fontSize: 24,

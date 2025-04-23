@@ -38,7 +38,7 @@ const SportsData = () => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <Card style={[styles.card, { backgroundColor: colors.surface }]} key={item.id}>
+    <Card style={[styles.card, { backgroundColor: "rgba(255, 255, 255, 0.8)" }]} key={item.id}>
       <Card.Content>
         <Text style={styles.activity}>{item.activity}</Text>
         <Text>Kesto: {item.duration} min</Text>
