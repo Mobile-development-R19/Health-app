@@ -11,6 +11,8 @@ const Add = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -97,7 +99,7 @@ const Add = ({ navigation }) => {
         style={styles.dateButton}
         textColor={colors.primary}
       >
-        {`Date: ${date.toLocaleDateString()}`}
+        {`Päivämäärä: ${date.toLocaleDateString('fi-FI')}`}      
       </Button>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -113,7 +115,7 @@ const Add = ({ navigation }) => {
         buttonColor={colors.primary}
         textColor={colors.onPrimary}
       >
-        Save
+        Tallenna
       </Button>
 
       <Button
@@ -123,7 +125,7 @@ const Add = ({ navigation }) => {
         onPress={() => navigation.goBack()}
         style={styles.saveButton}
       >
-        Cancel
+        Peruuta
       </Button>
       </View>
     </View>

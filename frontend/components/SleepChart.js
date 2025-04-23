@@ -53,8 +53,8 @@ export default function SleepChart() {
   }
 
   const manyData = data.length > 7;
-  const barWidth = manyData ? 20 : screenWidth / (2 * data.length);
-  const spacing = manyData ? 15 : screenWidth / (2 * data.length);
+  const barWidth = manyData ? 10 : screenWidth / (2 * data.length);
+  const spacing = manyData ? 10 : screenWidth / (2 * data.length);
   const chartWidth = data.length * (barWidth + spacing);
 
   return (

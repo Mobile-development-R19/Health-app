@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import StepCount from '../components/StepCount';
 
 export default function HomeScreen({ navigation, setIsDarkMode }) {
   const { colors } = useTheme();
@@ -16,12 +17,14 @@ export default function HomeScreen({ navigation, setIsDarkMode }) {
           />
         </View>
 
+        <StepCount />
+
       <View style={styles.mainButtons}>
         <Button 
           mode="contained" 
           buttonColor={colors.primary} 
           textColor={colors.onPrimary}
-          onPress={() => console.log('Askeleet')} 
+          onPress={() => navigation.navigate('StepsChart')} 
           style={styles.button} 
           icon="walk"
         >
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     paddingHorizontal: 16,
-    marginTop: 55,
+    marginTop: 10,
   },
   footerContainer: {
     flex: 0,
@@ -106,4 +109,5 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
   },
+  
 });

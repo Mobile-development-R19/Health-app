@@ -23,6 +23,7 @@ import { lightTheme, darkTheme } from './theme/Themes';
 import { auth, getFirestore, doc, setDoc, getDoc } from './firebase/Config';
 import FoodScreen from './screens/FoodScreen';
 import SportsData from './screens/SportsData';
+import StepsChart from './screens/StepsChart';
 
 const Stack = createStackNavigator();
 
@@ -125,6 +126,13 @@ export default function App() {
                   {(props) => (
                     <Layout navigation={props.navigation}>
                       <ChartScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
+                </Stack.Screen>
+                <Stack.Screen name="StepsChart">
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <StepsChart {...props} setIsDarkMode={setIsDarkMode} />
                     </Layout>
                   )}
                 </Stack.Screen>
