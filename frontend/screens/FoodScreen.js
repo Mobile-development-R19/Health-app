@@ -223,7 +223,7 @@ export default function FoodScreen() {
                                 setReversed(!reversed);
                             }}
                         >
-                            <Text style={{fontSize: 16, textAlign: "right", marginTop: 10, marginRight: 20}}>
+                            <Text style={{fontSize: 16, textAlign: "right", marginRight: 20}}>
                                 {reversed ? "Uusimmat ensin" : "Vanhimmat ensin"}
                             </Text>
                         </TouchableOpacity>
