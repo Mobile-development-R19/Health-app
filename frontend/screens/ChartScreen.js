@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import TabBar from "../components/TabBar";
 import Chart from "../components/Chart";
+import SleepChart from "../components/SleepChart";
 
 const MIN = 10;
 const MAX = 1000;
 
-export default function ChartScreen({navigation}) {
+export default function ChartScreen({ navigation }) {
     const [data, setData] = useState([
         30, 40, 50, 20, 10, 30, 40, 50, 40, 10, 30, 20
     ]);
@@ -23,52 +24,42 @@ export default function ChartScreen({navigation}) {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.chartContainer}>
-                <TabBar
-                    tabs={[
-                        {
-                            title: "Päivä",
-                            onPress: () => { generateData(24); }
-                        },
-                        {
-                            title: "Viikko",
-                            onPress: () => { generateData(7); }
-                        },
-                        {
-                            title: "Kuukausi",
-                            onPress: () => { generateData(30); }
-                        },
-                        {
-                            title: "Vuosi",
-                            onPress: () => { generateData(12); }
-                        },
-                    ]}
-                />
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>
-                        {data.reduce((a, b) => a + b, 0)}
-                    </Text>
-                    <Text style={styles.textSmall}>
-                        askelta
-                    </Text>
+        <ScrollView style={styles.scrollContainer}>
+            <View style={styles.container}>
+                <View style={styles.chartContainer}>
+                    <TabBar
+                        tabs={[
+                            { title: "Päivä", onPress: () => generateData(24) },
+                            { title: "Viikko", onPress: () => generateData(7) },
+                            { title: "Kuukausi", onPress: () => generateData(30) },
+                            { title: "Vuosi", onPress: () => generateData(12) },
+                        ]}
+                    />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.text}>
+                            {data.reduce((a, b) => a + b, 0)}
+                        </Text>
+                        <Text style={styles.textSmall}>askelta</Text>
+                    </View>
+                    <View style={styles.chart}>
+                        <Chart data={data} />
+                    </View>
                 </View>
-                <View style={styles.chart}>
-                    <Chart data={data} />
-                </View>
+                <SleepChart />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.74)',
+    },
     container: {
         flex: 1,
-        justifyContent: "space-between",
-        paddingBottom: 30,
-        backgroundColor: 'rgba(255, 255, 255, 0.74)',
+        padding: 10,
         borderRadius: 20,
-        margin: 10,
     },
     chartContainer: {
         flex: 1,
@@ -86,10 +77,10 @@ const styles = StyleSheet.create({
     },
     textSmall: {
         fontSize: 22,
-        color: "#bbb",
+        color: "#000",
         marginLeft: 4,
     },
     chart: {
-        marginTop: 20,
+        marginTop: 30,
     }
 });
