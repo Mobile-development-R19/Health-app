@@ -34,3 +34,15 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Build output and caches
+ios/build/
+android/.gradle/
+android/app/build/
+*.iml
+android
+
+
+# Firebase config
+google-services.json
+
