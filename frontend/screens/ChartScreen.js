@@ -2,8 +2,6 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import TabBar from "../components/TabBar";
 import Chart from "../components/Chart";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 
 const MIN = 10;
 const MAX = 1000;
@@ -26,7 +24,6 @@ export default function ChartScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Header navigation={navigation} />
             <View style={styles.chartContainer}>
                 <TabBar
                     tabs={[
@@ -60,7 +57,6 @@ export default function ChartScreen({navigation}) {
                     <Chart data={data} />
                 </View>
             </View>
-            <Footer navigation={navigation} />
         </View>
     );
 }
@@ -70,7 +66,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "space-between",
         paddingBottom: 30,
-        backgroundColor: "#f9f9f9",
+        backgroundColor: 'rgba(255, 255, 255, 0.74)',
+        borderRadius: 20,
+        margin: 10,
     },
     chartContainer: {
         flex: 1,

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native'; 
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native'; 
+import { useTheme } from 'react-native-paper';
 import { getFirestore, collection, doc, getDocs } from 'firebase/firestore'; // Firebase Firestore -kirjaston tuonti
 import { auth } from '../firebase/Config'; // Firebase autentikointi
 
 export default function SleepList({ navigation }) {
   const [sleepEntries, setSleepEntries] = useState([]); // Tila tallennettujen unidatan käsittelyyn
+  const { colors } = useTheme();
 
   useEffect(() => {
     // Hakee unidatan Firestoresta
@@ -56,8 +58,11 @@ export default function SleepList({ navigation }) {
       />
       
       {/* "Takaisin" painike, joka vie takaisin */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.buttonText}>Takaisin</Text>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={[styles.backButton, { backgroundColor: colors.primary }]}
+      >
+        <Text style={[styles.buttonText, { color: colors.onPrimary }]}>Takaisin</Text>
       </TouchableOpacity>
     </View>
   );
@@ -100,6 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     alignItems: 'center',
     width: '100%',
+    borderRadius: 10,
   },
   buttonText: {
     color: '#fff',

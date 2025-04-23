@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet, Image } from "react-native";
 import { auth, createUserWithEmailAndPassword, getFirestore, doc, setDoc  } from "../firebase/Config";
 
 export default function Signup({ navigation }) {
@@ -28,6 +28,8 @@ export default function Signup({ navigation }) {
 
   return (
     <View style={styles.container}>
+       <Image source={require('../assets/Logo.png')} style={styles.logo} />
+       <Image source={require('../assets/name.png')} style={styles.name} />
       <TextInput 
         placeholder="Sähköposti"
         placeholderTextColor="#666"
@@ -57,6 +59,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
         backgroundColor: 'transparent',
+        alignItems: 'center',
+    },
+    logo: {
+      width: 100,
+      height: 100,
+      marginBottom: 20,
+    },
+    name: {
+      width: 200,
+      height: 50,
+      marginBottom: 30,
     },
     input: {
         backgroundColor: 'white',

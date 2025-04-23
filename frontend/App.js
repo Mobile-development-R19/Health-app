@@ -16,6 +16,8 @@ import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import Settings from './screens/Settings';
 import CalculatorScreen from './screens/CalculatorScreen';
 import Add from './screens/Add';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { lightTheme, darkTheme } from './theme/Themes'; 
 import { auth, getFirestore, doc, setDoc, getDoc } from './firebase/Config';
@@ -52,7 +54,7 @@ export default function App() {
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setIsDarkMode(userData.theme === 'dark'); // Aseta teema käyttäjän asetusten mukaan
+          setIsDarkMode(userData.theme === 'dark'); // Käytetään käyttäjän valitsemaa teemaa
         }
       } catch (error) {
         console.error('Error fetching theme:', error);
@@ -60,32 +62,14 @@ export default function App() {
     };
 
     fetchTheme();
+
+    // Seurataan kirjautumistilan muutoksia
+    const unsubscribe = auth.onAuthStateChanged(() => {
+      fetchTheme();
+    });
+
+    return unsubscribe;
   }, []);
-
-  // Teeman vaihtaminen ja tallentaminen Firebaseen
-  const handleThemeChange = async (isDark) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        alert('Käyttäjä ei ole kirjautunut sisään.');
-        return;
-      }
-
-      const db = getFirestore();
-      const userDocRef = doc(db, "users", user.uid);
-
-      await setDoc(
-        userDocRef,
-        { theme: isDark ? 'dark' : 'light' },
-        { merge: true }
-      );
-
-      setIsDarkMode(isDark);
-    } catch (error) {
-      console.error('Virhe teemaa tallentaessa:', error);
-      alert('Teeman tallennus epäonnistui. Yritä uudelleen.');
-    }
-  };
 
   return (
 
@@ -99,51 +83,99 @@ export default function App() {
           <SafeAreaView style={styles.container}>
             {/* Pass our transparent theme to NavigationContainer */}
             <NavigationContainer theme={navTheme}>
-              <Stack.Navigator initialRouteName="AuthLoadingScreen" screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName="AuthLoadingScreen" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="AuthLoadingScreen">
                     {(props) => <AuthLoadingScreen {...props} setIsDarkMode={setIsDarkMode} />}
                   </Stack.Screen>
-                <Stack.Screen name="Signup">
+                  <Stack.Screen name="Signup">
                   {(props) => <Signup {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
                 <Stack.Screen name="Login">
                   {(props) => <Login {...props} setIsDarkMode={setIsDarkMode} />}
                 </Stack.Screen>
                 <Stack.Screen name="HomeScreen">
-                  {(props) => <HomeScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <HomeScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="MyDetails">
-                  {(props) => <MyDetails {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <MyDetails {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="Add">
-                  {(props) => <Add {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <Add {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="ChartPreviewScreen">
-                  {(props) => <ChartPreviewScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <ChartPreviewScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="ChartScreen">
-                  {(props) => <ChartScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <ChartScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="SleepEntry">
-                  {(props) => <SleepEntry {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <SleepEntry {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="SleepList">
-                  {(props) => <SleepList {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <SleepList {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="SleepChart">
-                  {(props) => <SleepChart {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <SleepChart {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="CalculatorScreen">
-                  {(props) => <CalculatorScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <CalculatorScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="Food">
-                  {(props) => <FoodScreen {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <FoodScreen {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name="Settings">
-                  {(props) => <Settings {...props} setIsDarkMode={setIsDarkMode} />}
-                  </Stack.Screen>
-                  <Stack.Screen name="SportsData">
-                  {(props) => <SportsData {...props} setIsDarkMode={setIsDarkMode} />}
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <Settings {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
+                </Stack.Screen>
+                <Stack.Screen name="SportsData">
+                  {(props) => (
+                    <Layout navigation={props.navigation}>
+                      <SportsData {...props} setIsDarkMode={setIsDarkMode} />
+                    </Layout>
+                  )}
                 </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
@@ -154,11 +186,25 @@ export default function App() {
   );
 }
 
+const Layout = ({ children, navigation }) => (
+  <View style={styles.layout}>
+    <Header navigation={navigation} />
+    <View style={styles.content}>{children}</View>
+    <Footer navigation={navigation} />
+  </View>
+);
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
   container: {
-    flex: 1, 
+    flex: 1,
+  },
+  layout: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
   },
 });

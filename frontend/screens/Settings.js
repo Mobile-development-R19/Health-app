@@ -138,10 +138,14 @@ export default function Settings({ setIsDarkMode }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+    borderRadius: 15, 
+    padding: 16, 
+    marginHorizontal: 20, 
+    marginVertical: 40, 
     alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0, 
   },
   header: {
     fontSize: 28,

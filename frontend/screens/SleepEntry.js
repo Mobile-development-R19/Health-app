@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Platform, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Platform, Pressable } from 'react-native';
+import { Button, useTheme } from 'react-native-paper';
 import { getFirestore, collection, doc, addDoc, Timestamp } from 'firebase/firestore';
 import { auth } from '../firebase/Config';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,6 +14,8 @@ export default function SleepEntry({ navigation }) {
   const [showWakeDatePicker, setShowWakeDatePicker] = useState(false);
   const [showSleepTimePicker, setShowSleepTimePicker] = useState(false);
   const [showWakeTimePicker, setShowWakeTimePicker] = useState(false);
+
+  const { colors } = useTheme();
 
   // Muotoilee päivämäärän ISO-muotoon (esim. "2025-04-14")
   const formatDate = (date) => {
@@ -167,18 +170,21 @@ export default function SleepEntry({ navigation }) {
           }}
         />
       )}
-      <View style={styles.buttonWrapper}>
-        <Button title="Tallenna uni" onPress={saveSleepData} />
-        </View>
-        <View style={styles.buttonWrapper}>
-          <Button title="Näytä kaikki unet" onPress={() => navigation.navigate('SleepList')} />
-            
-          </View>
-          <View style={styles.buttonWrapper}>
-            <Button title="Takaisin" onPress={() => navigation.goBack()} />
-
-            </View>
-
+      <View style={[styles.buttonWrapper, { backgroundColor: colors.primary }]}>
+        <Button mode="contained" onPress={saveSleepData} color={colors.onPrimary}>
+          Tallenna uni
+        </Button>
+      </View>
+      <View style={[styles.buttonWrapper, { backgroundColor: colors.primary }]}>
+        <Button mode="contained" onPress={() => navigation.navigate('SleepList')} color={colors.onPrimary}>
+          Näytä kaikki unet
+        </Button>
+      </View>
+      <View style={[styles.buttonWrapper, { backgroundColor: colors.primary }]}>
+        <Button mode="contained" onPress={() => navigation.goBack()} color={colors.onPrimary}>
+          Takaisin
+        </Button>
+      </View>
     </View>
   );
 }
@@ -207,6 +213,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   buttonWrapper: {
-    marginVertical: 8, 
+    marginVertical: 8,
+    borderRadius: 10,
+    overflow: 'hidden',
   },  
 });

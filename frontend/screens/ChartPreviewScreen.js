@@ -11,7 +11,6 @@ export default function ChartPreviewScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Header navigation={navigation} />
             <View style={styles.chartContainer}>
                 <ChartPreview
                     navigation={navigation}
@@ -19,7 +18,6 @@ export default function ChartPreviewScreen({navigation}) {
                     title="Askeleet"
                 />
             </View>
-            <Footer navigation={navigation} />
         </View>
     );
 }
